@@ -1,0 +1,72 @@
+<link rel="import" href="./polymerImport.html">
+
+<dom-module id="wxr-camera">
+	<template>
+		<style>
+			wxr-camera {
+				--wxr-transform: var(--wxr-transform);
+			}
+		</style>
+	</template>
+
+	<script>
+		'use strict';
+
+		class WXRCamera extends WXRElement {
+			constructor() {
+				super();
+			}
+
+			static get is() {
+				return "wxr-camera";
+			}
+
+			static get properties() {
+				return {
+					fovy: {type: Number, value: 60},
+					aspect: {type: Number, value: 1},
+					near: {type: Number, value: 0.1},
+					far: {type: Number, value: 2000},
+					lookControls: {type: Boolean, value: false},
+					wasdControls: {type: Boolean, value:false}
+
+				};
+			}
+
+			connectedCallback() {
+				super.connectedCallback();
+
+				this.addEventListener(WXREvent.CAMERA_READY, this.onCameraReady);
+			}
+
+			onCameraReady(event) {
+				WXR.log(WXRCamera.is, "camera ready");
+
+				let camera = new THREE.PerspectiveCamera(event.detail.fovy, window.innerWidth/window.innerHeight, event.detail.near, event.detail.far);
+
+				this.parentElement.webGLObject3D.children.forEach(child=> {
+					if(child.constructor === THREE.PerspectiveCamera) {
+						this.parentElement.webGLObject3D.remove(child);
+					}
+				});
+
+				camera.wasdControls = this.wasdControls;
+				camera.lookControls = this.lookControls;
+
+				this.addWebGLObject3D(camera);
+				this.parentElement.onCameraReady(camera);
+				this.updateProperties(event.detail);
+			}
+
+			updateProperties(cameraParams) {
+				let properties = Object.getOwnPropertyNames(cameraParams);
+				for (let property of properties) {
+					this.setAttribute(property, cameraParams[property]);
+				}
+			}
+		}
+
+		customElements.define(WXRCamera.is, WXRCamera);
+
+	</script>
+</dom-module>

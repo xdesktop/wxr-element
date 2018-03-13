@@ -1,0 +1,233 @@
+<link rel="import" href="./polymerImport.html">
+<dom-module id="wxr-element">
+	<script>
+		'use strict';
+
+		class WXRElement extends Polymer.Element {
+			constructor() {
+				super();
+			}
+
+			static get is() {
+				return "wxr-element";
+			}
+
+			static get properties() {
+				return {
+					color: {type: Number, value: 0xffffff},
+					texture: {type: String},
+					type: {type: String, value: "basic"},
+					id: String,
+					webGLObject3D: THREE.Object3D,
+					CSS3DObject3D: THREE.Object3D
+				};
+			}
+
+			connectedCallback() {
+				super.connectedCallback();
+
+				this.webGLObject3D = new THREE.Group();
+				this.CSS3DObject3D = new THREE.Group();
+
+				let oldTransform = this.style.getPropertyValue('--wxr-transform');
+				let oldDisplay = this.style.getPropertyValue('display');
+
+				let observer = new MutationObserver(function (mutations) {
+					mutations.forEach(mutationRecord => {
+						let style = this.style;
+						let transform = style.getPropertyValue('--wxr-transform');
+						let display = style.getPropertyValue('display');
+
+						if (transform !== oldTransform) {
+							oldTransform = transform;
+							this.computeStyleTransform(transform);
+						}
+
+						if (display !== oldDisplay) {
+							oldDisplay = display;
+							this.changedDomStyleDisplay(display);
+						}
+					});
+				}.bind(this));
+
+				observer.observe(this, {attributes: true, attributeFilter: ['style']});
+			}
+
+			disconnectedCallback() {
+				super.disconnectedCallback();
+
+				this.removeWebGLObject3D();
+				this.removeCSS3DObject3D();
+			}
+
+			addWebGLObject3D(object) {
+				this.webGLObject3D = object;
+				this.parentElement.webGLObject3D.add(object);
+				this.setAttribute("webgl_uuid", object.uuid);
+				this.applyCSSStyleToWebGLObject3D();
+			}
+
+			addCSS3DObject3D(object) {
+				this.CSS3DObject3D = object;
+				this.parentElement.CSS3DObject3D.add(object);
+				this.setAttribute("css3d_uuid", object.uuid);
+				this.applyCSSStyleToWebGLObject3D();
+			}
+
+			removeWebGLObject3D() {
+				this.parentElement.webGLObject3D.remove(this.webGLObject3D);
+				this.removeAttribute("webgl_uuid");
+			}
+
+			removeCSS3DObject3D() {
+				this.parentElement.CSS3DObject3D.remove(this.CSS3DObject3D);
+				this.removeAttribute("css3d_uuid");
+			}
+
+			getCSSStyleProperty() {
+				let style = window.getComputedStyle(this);
+
+				return style;
+			}
+
+			applyCSSStyleToWebGLObject3D() {
+				if (this.tagName.toLocaleLowerCase() === WXRCamera.is && WXR.ContextManager.getWXRMode() === WXRDevice.AR) {
+					return;
+				}
+
+				let style = this.getCSSStyleProperty();
+				let transform = style.getPropertyValue('--wxr-transform');
+
+				if (transform === "") {
+					transform = "translate3d(0,0,0) rotate3d(0,0,0) scale3d(1,1,1);";
+				}
+
+				this.computeStyleTransform(transform);
+			}
+
+			computeStyleTransform(transform) {
+				let result = [];
+				let tempSplit1 = transform.split("(");
+
+				for (let fragment1 of tempSplit1) {
+					let tempSplit2 = fragment1.split(")");
+
+					if (tempSplit2.length > 1) {
+						for (let fragment2 of tempSplit2) {
+							let input = (fragment2.startsWith(" ")) ? fragment2.substring(1) : fragment2;
+							result.push(input);
+						}
+					} else {
+						if (tempSplit2[0].search("translate3d") !== -1) {
+							result.push("translate3d");
+						} else if (tempSplit2[0].search("rotate3d") !== -1) {
+							result.push("rotate3d");
+						} else if (tempSplit2[0].search("scale3d") !== -1) {
+							result.push("scale3d");
+						}
+					}
+				}
+
+				for (let j = 0; j < result.length; j++) {
+					switch (result[j]) {
+						case "translate3d":
+							let positionTemp = result[j + 1].split(",");
+
+							if (this.webGLObject3D !== undefined) {
+								this.webGLObject3D.position.set(positionTemp[0] * 1, positionTemp[1] * 1, positionTemp[2] * 1);
+							}
+
+							if (this.CSS3DObject3D !== undefined) {
+								this.CSS3DObject3D.position.set(positionTemp[0] * $(WXRWorld.is)[0].renderer.getCSSFactor(), positionTemp[1] * $(WXRWorld.is)[0].renderer.getCSSFactor(), positionTemp[2] * $(WXRWorld.is)[0].renderer.getCSSFactor());
+							}
+							break;
+
+						case "rotate3d":
+							let rotationTemp = result[j + 1].split(",");
+
+							if (this.webGLObject3D !== undefined) {
+								this.webGLObject3D.rotation.set(rotationTemp[0] * 1, rotationTemp[1] * 1, rotationTemp[2] * 1);
+							}
+
+							if (this.CSS3DObject3D !== undefined) {
+								this.CSS3DObject3D.rotation.set(rotationTemp[0] * 1, rotationTemp[1] * 1, rotationTemp[2] * 1);
+							}
+							break;
+
+						case "scale3d":
+							let scaleTemp = result[j + 1].split(",");
+
+							if (this.webGLObject3D !== undefined) {
+								this.webGLObject3D.scale.set(scaleTemp[0] * 1, scaleTemp[1] * 1, scaleTemp[2] * 1);
+							}
+
+							if (this.CSS3DObject3D !== undefined) {
+								this.CSS3DObject3D.scale.set(scaleTemp[0] * 1, scaleTemp[1] * 1, scaleTemp[2] * 1);
+							}
+							break;
+					}
+				}
+			}
+
+			changedDomStyleDisplay(display) {
+				if (display === "none") {
+					this.hideWebGLObject3D(this.webGLObject3D);
+					this.hideCSS3DObject3D(this.CSS3DObject3D);
+				} else if (display === "block") {
+					this.showWebGLObject3D(this.webGLObject3D);
+					this.showCSS3DObject3D(this.CSS3DObject3D);
+				}
+			}
+
+			hideWebGLObject3D(object) {
+				object.visible = false;
+
+				if (object.children.length > 0) {
+					for (let child of object.children) {
+						this.hideWebGLObject3D(child);
+					}
+				}
+			}
+
+			showWebGLObject3D(object) {
+				object.visible = true;
+
+				if (object.children.length > 0) {
+					for (let child of object.children) {
+						this.showWebGLObject3D(child);
+					}
+				}
+			}
+
+			hideCSS3DObject3D(object) {
+				if (object.constructor === THREE.Group) {
+					object.visible = false;
+				} else if (object.constructor === THREE.CSS3DObject) {
+					object.element.style.display = "none";
+				}
+
+				if (object.children.length > 0) {
+					for (let child of object.children) {
+						this.hideCSS3DObject3D(child);
+					}
+				}
+			}
+
+			showCSS3DObject3D(object) {
+				if (object.constructor === THREE.Group) {
+					object.visible = true;
+				} else if (object.constructor === THREE.CSS3DObject) {
+					object.element.style.display = "block";
+				}
+
+				if (object.children.length > 0) {
+					for (let child of object.children) {
+						this.showCSS3DObject3D(child);
+					}
+				}
+			}
+		}
+
+		customElements.define(WXRElement.is, WXRElement);
+	</script>
+</dom-module>

@@ -1,0 +1,128 @@
+<link rel="import" href="./polymerImport.html">
+
+<dom-module id="wxr-animation">
+	<script>
+		class WXRAnimation extends Polymer.Element {
+			static get is() {
+				return "wxr-animation";
+			}
+
+			static get properties() {
+				return {
+					attribute: {type: String, value: "position"},
+					to: {type: String, value: "0 0 0"},
+					duration: {type: Number, value: 1000}, //millisecond
+					repeat: {type: Number, value: Infinity},
+					easing: {type: String, value: "linear"}, // TWEEN.Easing.Linear, Quadratic, Cubic, Quartic, Quintic, Sinusoidal, Exponential, Circular, Elastic, Back, Bounce
+					radian: {type: Number},
+					radius: {type: Number},
+					step: {type: Number}
+				};
+			}
+
+			connectedCallback() {
+				super.connectedCallback();
+
+				if (this.parentElement.tagName.startsWith(WXR.PREFIX_WXR)) {
+					this.addEventListener(WXREvent.TARGET_ABAILABLE, this.onTargetAvailable);
+				}
+			}
+
+			disconnectedCallback() {
+				super.disconnectedCallback();
+
+				this.removeAnimation();
+			}
+
+			onTargetAvailable(event) {
+				let clock = new THREE.Clock();
+
+				this.stepWebGL = clock.getElapsedTime() * 0.01;
+				this.stepCSS3D = clock.getElapsedTime() * 0.01;
+
+				if (typeof this.to === 'string') {
+					this.to = this.to.split(" ");
+				}
+
+				switch (this.easing) {
+					case WXRAnimation.VALUE_EASING_LINEAR:
+						this.easing = TWEEN.Easing.Linear.None;
+						break;
+				}
+
+				if (this.parentElement.webGLObject3D !== WXRAnimation.MODEL_UNLOADED) {
+					switch (this.attribute) {
+						case WXRAnimation.VALUE_POSITION:
+							this.fromWebGL = this.parentElement.webGLObject3D.position;
+							this.fromCSS3D = this.parentElement.CSS3DObject3D.position;
+							break;
+						case WXRAnimation.VALUE_ROTATION:
+							this.fromWebGL = this.parentElement.webGLObject3D.rotation;
+							this.fromCSS3D = this.parentElement.CSS3DObject3D.rotation;
+							break;
+					}
+					this.startAnimation();
+				}
+			}
+
+			onModelLoaded() {
+				switch (this.attribute) {
+					case WXRAnimation.VALUE_POSITION:
+						this.fromWebGL = this.parentElement.webGLObject3D.position;
+						this.fromCSS3D = this.parentElement.CSS3DObject3D.position;
+						break;
+					case WXRAnimation.VALUE_ROTATION:
+						this.fromWebGL = this.parentElement.webGLObject3D.rotation;
+						this.fromCSS3D = this.parentElement.CSS3DObject3D.rotation;
+						break;
+				}
+				this.startAnimation();
+			}
+
+			startAnimation() {
+				this.tweenWebGL = new TWEEN.Tween(this.fromWebGL)
+					.to({x: this.to[0], y: this.to[1], z: this.to[2]}, this.duration)
+					.easing(this.easing)
+					.repeat(this.repeat);
+
+				this.tweenCSS3D = new TWEEN.Tween(this.fromCSS3D)
+					.to({x: this.to[0], y: this.to[1], z: this.to[2]}, this.duration)
+					.easing(this.easing)
+					.repeat(this.repeat);
+
+				if (this.radian !== undefined && this.radius !== undefined) {  //공전
+					this.tweenWebGL.onUpdate(() => {
+						this.stepWebGL += this.radian;
+						this.parentElement.webGLObject3D.position.set(Math.sin(this.stepWebGL) * this.radius, this.parentElement.webGLObject3D.position.y, Math.cos(this.stepWebGL) * this.radius);
+					});
+					this.tweenCSS3D.onUpdate(() => {
+						this.stepCSS3D += this.radian;
+						this.parentElement.CSS3DObject3D.position.set(Math.sin(this.stepCSS3D) * this.radius * 1000, this.parentElement.CSS3DObject3D.position.y, Math.cos(this.stepCSS3D) * this.radius * 1000);
+					});
+				} else {
+					this.tweenWebGL.onUpdate(() => {
+						this.parentElement.webGLObject3D.rotation.set(this.tweenWebGL._object._x, this.tweenWebGL._object._y, this.tweenWebGL._object._z);
+					});
+					this.tweenCSS3D.onUpdate(() => {
+						this.parentElement.CSS3DObject3D.rotation.set(this.tweenCSS3D._object._x, this.tweenCSS3D._object._y, this.tweenCSS3D._object._z);
+					});
+				}
+
+				this.tweenWebGL.start();
+				this.tweenCSS3D.start();
+			}
+
+			removeAnimation() {
+				this.tweenWebGL.stop();
+				this.tweenCSS3D.stop();
+			}
+		}
+
+		customElements.define(WXRAnimation.is, WXRAnimation);
+
+		WXRAnimation.VALUE_POSITION = "position";
+		WXRAnimation.VALUE_ROTATION = "rotation";
+		WXRAnimation.VALUE_EASING_LINEAR = "linear"
+		WXRAnimation.MODEL_UNLOADED = "unloaded";
+	</script>
+</dom-module>

@@ -1,0 +1,188 @@
+<link rel="import" href="./polymerImport.html">
+<dom-module id="wxr-target">
+	<script>
+		'use strict';
+
+		class WXRTarget extends WXRElement {
+			constructor() {
+				super();
+			}
+
+			static get is() {
+				return "wxr-target";
+			}
+
+			static get properties() {
+				return {
+					id: {type: String},
+					targetObjects: {type: Array, value: []},
+					status: {type: String, value: WXREvent.AR_TARGET_MISSED},
+					src: {type: String}
+				};
+			}
+
+			connectedCallback() {
+				super.connectedCallback();
+
+				let webGLAugmentation = new THREE.Group();
+				let css3DAugmentation = new THREE.Group();
+
+				this.addWebGLObject3D(webGLAugmentation);
+				this.addCSS3DObject3D(css3DAugmentation);
+
+				this.style.display = "none";
+				this.trackerType = "";
+				this.width = 0;
+				this.height = 0;
+				this.depth = 0;
+
+				if (this.parentElement.parentElement.arEngine === WXRTarget.VUFORIA && this.parentElement.enable && WXR.ContextManager.isMobile()) {
+					$.ajax({
+						url: this.src + WXRTarget.VUFORIA_JSON_PATH,
+						success: (data) => {
+							this.feature = data;
+							WXR.SpaceManager.addTargets(this.feature);
+						},
+						error: (err) => {
+							WXR.log(WXRTarget.is, this.src + WXRTarget.VUFORIA_JSON_PATH + " not found")
+						}
+					});
+				}
+
+				this.addEventListener(WXREvent.AR_TARGET_DETECTED, this.onDetected);
+				this.addEventListener(WXREvent.AR_TARGET_MOVED, this.onMoved);
+				this.addEventListener(WXREvent.AR_TARGET_MISSED, this.onMissed);
+			}
+
+			disconnectedCallback() {
+				if (this.feature !== undefined) {
+					WXR.SpaceManager.unloadTargets(this.feature);
+				}
+			}
+
+			onDetected(event) {
+				this.status = WXREvent.AR_TARGET_DETECTED;
+				this.style.display = "block";
+				this.trackerType = event.detail.tracker;
+				this.width = event.detail.size.width;
+				this.height = event.detail.size.height;
+				this.depth = event.detail.size.depth;
+
+				let texture = undefined; //WXRTarget.TARGET_TRANSPARENT_TEXTURE;
+				let geometry;
+
+				switch (this.trackerType) {
+					case WXRTarget.IMAGE_TARGET:
+						geometry = new THREE.PlaneGeometry(this.width, this.height);
+						break;
+
+					case WXRTarget.MULTI_TARGET:
+						geometry = new THREE.BoxGeometry(this.width, this.height, this.depth);
+						break;
+
+					case WXRTarget.CYLINDER_TARGET:
+						geometry = new THREE.CylinderGeometry(this.width / 2, this.depth / 2, this.height, 48);
+						break;
+
+					case WXRTarget.OBJECT_TARGET:
+						geometry = new THREE.BoxGeometry(this.width, this.height, this.depth);
+						break;
+
+					case WXRTarget.UNKNOWN_TARGET:
+						break;
+				}
+
+				let material = new THREE.MeshBasicMaterial({map: new THREE.TextureLoader().load(texture)});
+				let transparentTarget = new THREE.Mesh(geometry, material);
+				this.webGLObject3D.add(transparentTarget);
+
+				WXREvent.dispatchEvent({type: WXREvent.TARGET_ABAILABLE, target: this});
+			}
+
+			onMoved(event) {
+				if (this.trackerType == WXRTarget.CYLINDER_TARGET) {
+					let position = new THREE.Vector3();
+					let quaternion = new THREE.Quaternion();
+					let scale = new THREE.Vector3();
+
+					event.detail.transform.decompose(position, quaternion, scale);
+
+					let x = new THREE.Vector3();
+					let y = new THREE.Vector3();
+					let z = new THREE.Vector3();
+
+					event.detail.transform.extractBasis(x, y, z);
+
+					let newMatrix4 = new THREE.Matrix4();
+					newMatrix4.makeBasis(x, z, y.negate());
+					newMatrix4.setPosition(position);
+
+					position = new THREE.Vector3();
+					quaternion = new THREE.Quaternion();
+					scale = new THREE.Vector3();
+
+					newMatrix4.decompose(position, quaternion, scale);
+
+					this.webGLObject3D.position.set(position.x, position.y, position.z);
+					this.webGLObject3D.translateY(this.height / 2);
+					this.webGLObject3D.setRotationFromQuaternion(quaternion);
+					this.webGLObject3D.scale.set(scale.x, scale.y, scale.z);
+				} else {
+					let position = new THREE.Vector3();
+					let quaternion = new THREE.Quaternion();
+					let scale = new THREE.Vector3();
+
+					event.detail.transform.decompose(position, quaternion, scale);
+
+					this.webGLObject3D.position.set(position.x, position.y, position.z);
+					this.webGLObject3D.setRotationFromQuaternion(quaternion);
+					this.webGLObject3D.scale.set(scale.x, scale.y, scale.z);
+
+					this.CSS3DObject3D.position.set(position.x * 1000, position.y * 1000, position.z * 1000);
+					this.CSS3DObject3D.setRotationFromQuaternion(quaternion);
+					this.CSS3DObject3D.scale.set(scale.x, scale.y, scale.z);
+				}
+			}
+
+			onMissed(event) {
+				this.status = WXREvent.AR_TARGET_MISSED;
+				this.clearObject3D();
+				TWEEN.removeAll();
+				$(WXRWorld.is)[0].transformControls.detach();
+			}
+
+			clearObject3D() {
+				let cssObjects = [];
+
+				for (let i = this.webGLObject3D.children.length - 1; i >= 0; i--) {
+					let child = this.webGLObject3D.children[i];
+
+					this.webGLObject3D.remove(child);
+				}
+
+				this.CSS3DObject3D.traverse(cssObject => {
+					if (cssObject !== this.CSS3DObject3D) {
+						cssObjects.push(cssObject);
+					}
+				});
+
+				cssObjects.forEach(cssObject => {
+					cssObject.parent.remove(cssObject);
+				})
+			}
+		}
+
+		customElements.define(WXRTarget.is, WXRTarget);
+
+		WXRTarget.VUFORIA = "vuforia";
+		WXRTarget.VUFORIA_JSON_PATH = "/index.json";
+		WXRTarget.VUFORIA_METATDATA_URL = "metadataURL";
+		WXRTarget.VUFORIA_FEATURE_URL = "featureURL";
+		WXRTarget.IMAGE_TARGET = "imageTarget";
+		WXRTarget.MULTI_TARGET = "multiTarget";
+		WXRTarget.CYLINDER_TARGET = "cylinderTarget";
+		WXRTarget.OBJECT_TARGET = "objectTarget";
+		WXRTarget.UNKNOWN_TARGET = "unknownTarget";
+		WXRTarget.TARGET_TRANSPARENT_TEXTURE = "http://wxrweb.webizing.org/images/target_texture.png";
+	</script>
+</dom-module>
