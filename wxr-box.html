@@ -42,7 +42,7 @@
 
 			onTargetAvailable (event) {
 				let geometry = new THREE.BoxGeometry(this.width, this.height, this.depth, this.widthSegments, this.heightSegments, this.depthSegments);
-				let material = new THREE.MeshBasicMaterial({
+				let material = new THREE.MeshLambertMaterial({
 					color: this.color,
 					wireframe: false
 				});

@@ -47,7 +47,7 @@
 
 			onTargetAvailable (event) {
 				let geometry = new THREE.SphereGeometry(this.radius, this.widthSegments, this.heightSegments, this.phiStart, this.phiLength, this.thetaStart, this.thetaLength);
-				let material = new THREE.MeshBasicMaterial({
+				let material = new THREE.MeshLambertMaterial({
 					color: this.color
 				});
 

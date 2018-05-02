@@ -40,7 +40,7 @@
 
 			onTargetAvailable (event) {
 				let geometry = new THREE.CylinderGeometry(this.radiusTop, this.radiusBottom, this.height, this.radiusSegments);
-				let material = new THREE.MeshBasicMaterial({
+				let material = new THREE.MeshLambertMaterial({
 					color: this.color
 				});
 
