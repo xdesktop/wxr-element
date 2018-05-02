@@ -56,6 +56,10 @@
 			disconnectedCallback() {
 				super.disconnectedCallback();
 
+				removeObject()
+			}
+
+			removeObject() {
 				this.removeWebGLObject3D();
 				this.removeCSS3DObject3D();
 			}
@@ -77,11 +81,15 @@
 			removeWebGLObject3D() {
 				this.parentElement.webGLObject3D.remove(this.webGLObject3D);
 				this.removeAttribute("webgl_uuid");
+				let webGLAugmentation = new THREE.Group();
+				this.addWebGLObject3D(webGLAugmentation);
 			}
 
 			removeCSS3DObject3D() {
 				this.parentElement.CSS3DObject3D.remove(this.CSS3DObject3D);
 				this.removeAttribute("css3d_uuid");
+				let css3DAugmentation = new THREE.Group();
+				this.addCSS3DObject3D(css3DAugmentation);
 			}
 
 			getCSSStyleProperty() {
@@ -96,75 +104,61 @@
 				}
 
 				let style = this.getCSSStyleProperty();
-				let transform = style.getPropertyValue('--wxr-transform');
+				let css = style.getPropertyValue('--wxr-transform');
 
-				if (transform === "") {
-					transform = "translate3d(0,0,0) rotate3d(0,0,0) scale3d(1,1,1);";
+				if (css === "") {
+					css = "translate3d(0,0,0) rotate3d(0,0,0) scale3d(1,1,1);";
 				}
 
-				this.computeStyleTransform(transform);
+				this.computeStyleTransform(css);
 			}
 
-			computeStyleTransform(transform) {
-				let result = [];
-				let tempSplit1 = transform.split("(");
+			computeStyleTransform(css) {
+				let transform = [];
+				let position = new THREE.Vector3(0, 0, 0);
+				let rotation = new THREE.Vector3(0, 0, 0);
+				let scale = new THREE.Vector3(1, 1, 1);
 
-				for (let fragment1 of tempSplit1) {
-					let tempSplit2 = fragment1.split(")");
+				for(let leftBracketSplit of css.split("3d(")){
 
-					if (tempSplit2.length > 1) {
-						for (let fragment2 of tempSplit2) {
-							let input = (fragment2.startsWith(" ")) ? fragment2.substring(1) : fragment2;
-							result.push(input);
+					if(leftBracketSplit.indexOf(")") !== -1) {
+						for(let rightBracketSplit of leftBracketSplit.split(")")) {
+							transform.push(rightBracketSplit);
 						}
 					} else {
-						if (tempSplit2[0].search("translate3d") !== -1) {
-							result.push("translate3d");
-						} else if (tempSplit2[0].search("rotate3d") !== -1) {
-							result.push("rotate3d");
-						} else if (tempSplit2[0].search("scale3d") !== -1) {
-							result.push("scale3d");
-						}
+						transform.push(leftBracketSplit);
 					}
 				}
 
-				for (let j = 0; j < result.length; j++) {
-					switch (result[j]) {
-						case "translate3d":
-							let positionTemp = result[j + 1].split(",");
+				if(transform.indexOf(';' !== -1)) {
+					transform.splice(transform.indexOf(';'), 1);
+				}
 
-							if (this.webGLObject3D !== undefined) {
-								this.webGLObject3D.position.set(positionTemp[0] * 1, positionTemp[1] * 1, positionTemp[2] * 1);
-							}
-
-							if (this.CSS3DObject3D !== undefined) {
-								this.CSS3DObject3D.position.set(positionTemp[0] * $(WXRWorld.is)[0].renderer.getCSSFactor(), positionTemp[1] * $(WXRWorld.is)[0].renderer.getCSSFactor(), positionTemp[2] * $(WXRWorld.is)[0].renderer.getCSSFactor());
-							}
+				for(let i=0 ; i<transform.length ; i++) {
+					switch(transform[i].trim()) {
+						case "translate":
+							position.fromArray(transform[i + 1].split(","));
 							break;
-
-						case "rotate3d":
-							let rotationTemp = result[j + 1].split(",");
-
-							if (this.webGLObject3D !== undefined) {
-								this.webGLObject3D.rotation.set(rotationTemp[0] * 1, rotationTemp[1] * 1, rotationTemp[2] * 1);
-							}
-
-							if (this.CSS3DObject3D !== undefined) {
-								this.CSS3DObject3D.rotation.set(rotationTemp[0] * 1, rotationTemp[1] * 1, rotationTemp[2] * 1);
-							}
+						case "rotate":
+							rotation.fromArray(transform[i + 1].split(","));
 							break;
-
-						case "scale3d":
-							let scaleTemp = result[j + 1].split(",");
-
-							if (this.webGLObject3D !== undefined) {
-								this.webGLObject3D.scale.set(scaleTemp[0] * 1, scaleTemp[1] * 1, scaleTemp[2] * 1);
-							}
-
-							if (this.CSS3DObject3D !== undefined) {
-								this.CSS3DObject3D.scale.set(scaleTemp[0] * 1, scaleTemp[1] * 1, scaleTemp[2] * 1);
-							}
+						case "scale":
+							scale.fromArray(transform[i + 1].split(","));
 							break;
+					}
+				}
+
+				if (this.webGLObject3D !== undefined) {
+					this.webGLObject3D.position.set(position.x, position.y, position.z);
+					this.webGLObject3D.rotation.set(rotation.x, rotation.y, rotation.z);
+					this.webGLObject3D.scale.set(scale.x, scale.y, scale.z);
+				}
+
+				if (this.CSS3DObject3D !== undefined) {
+					if(this.CSS3DObject3D.constructor === THREE.CSS3DObject) {
+						this.CSS3DObject3D.position.set(position.x, position.y, position.z);
+						this.CSS3DObject3D.rotation.set(rotation.x, rotation.y, rotation.z);
+						this.CSS3DObject3D.scale.set(scale.x, scale.y, scale.z);
 					}
 				}
 			}
