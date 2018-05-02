@@ -9,6 +9,7 @@
 				height: 50px;
 				color: #FFFFFF;
 				background-color: #2196F3;
+				z-index: 1000;
 			}
 
 			#WXRAppbarLeftIcon, #WXRAppbarRightIcon {
@@ -17,6 +18,7 @@
 				height: 50px !important;
 				padding: 0px;
 				color: #FFFFFF;
+				z-index: 1001;
 			}
 
 			#WXRAppbarLeftIcon {
@@ -49,6 +51,8 @@
 				--light-theme-secondary-color: #fff;
 				--secondary-text-color: none;
 				--primary-color: none;
+				pointer-events: all;
+				z-index: 1001;
 			}
 
 			paper-input#WXRAppbarCenterText {
@@ -95,10 +99,11 @@
 				position: absolute;
 				top: 0;
 				left: 0;
-				width: 50vw;
+				width: 50vmin;
 				height: 100vh;
 				margin: 0px;
 				background-color: #FCFCFC;
+				z-index: 1001;
 			}
 
 			#WXRMenuList {
@@ -151,6 +156,7 @@
 				height: 50px;
 				padding: 5px;
 				color: #8C8C8C;
+				z-index: 1001;
 			}
 
 			#WXRAppbarDrop > paper-item {
@@ -249,26 +255,23 @@
 					<iron-icon icon="perm-media"></iron-icon>
 					<paper-dropdown-menu label="WXR Examples">
 						<paper-listbox slot="dropdown-content">
-							<paper-item on-click="onChangeHtml" href="//example.wxr.webizing.org/lastest/3DMode">3DMode</paper-item>
-							<paper-item on-click="onChangeHtml" href="//example.wxr.webizing.org/lastest/apeach">apeach</paper-item>
-							<paper-item on-click="onChangeHtml" href="//example.wxr.webizing.org/lastest/apeachCube">apeachCube</paper-item>
-							<paper-item on-click="onChangeHtml" href="//example.wxr.webizing.org/lastest/CSS3DObject">CSS3DObject</paper-item>
-							<paper-item on-click="onChangeHtml" href="//example.wxr.webizing.org/lastest/dryouObject">dryouObject</paper-item>
-							<paper-item on-click="onChangeHtml" href="//example.wxr.webizing.org/lastest/frodo">frodo</paper-item>
-							<paper-item on-click="onChangeHtml" href="//example.wxr.webizing.org/lastest/kakaoCylinder">kakaoCylinder</paper-item>
-							<paper-item on-click="onChangeHtml" href="//example.wxr.webizing.org/lastest/IndustrialPump">IndustrialPump</paper-item>
-							<paper-item on-click="onChangeHtml" href="//example.wxr.webizing.org/lastest/lineFriends_01">lineFriends_01</paper-item>
-							<paper-item on-click="onChangeHtml" href="//example.wxr.webizing.org/lastest/livinglab">livingLab</paper-item>
-							<paper-item on-click="onChangeHtml" href="//example.wxr.webizing.org/lastest/modeChange">modeChange</paper-item>
-							<paper-item on-click="onChangeHtml" href="//example.wxr.webizing.org/lastest/muziBox">muziBox</paper-item>
-							<paper-item on-click="onChangeHtml" href="//example.wxr.webizing.org/lastest/onClick">onClick</paper-item>
-							<paper-item on-click="onChangeHtml" href="//example.wxr.webizing.org/lastest/QRCode">QRCode</paper-item>
-							<paper-item on-click="onChangeHtml" href="//example.wxr.webizing.org/lastest/ryan">ryan</paper-item>
-							<paper-item on-click="onChangeHtml" href="//example.wxr.webizing.org/lastest/solar_system">solar_system</paper-item>
-							<paper-item on-click="onChangeHtml" href="//example.wxr.webizing.org/lastest/submarine">submarine</paper-item>
-							<paper-item on-click="onChangeHtml" href="//example.wxr.webizing.org/lastest/transform">transform</paper-item>
-							<paper-item on-click="onChangeHtml" href="//example.wxr.webizing.org/lastest/WebVR">WebVR</paper-item>
-							<paper-item on-click="onChangeHtml" href="//example.wxr.webizing.org/alpha/apeach">Alpha-test</paper-item>
+							<paper-item on-click="onChangeHtml" href="//jungminha.webizing.org/00/">Shaft Change</paper-item>
+							<paper-item on-click="onChangeHtml" href="//example.wxr.webizing.org/0.5/ImageTarget(Apeach)">ImageTarget(Apeach)</paper-item>
+							<paper-item on-click="onChangeHtml" href="//example.wxr.webizing.org/0.5/ImageTarget(line01)">ImageTarget(line01)</paper-item>
+							<paper-item on-click="onChangeHtml" href="//example.wxr.webizing.org/0.5/MultiTarget(Apeach)">MultiTarget(Apeach)</paper-item>
+							<paper-item on-click="onChangeHtml" href="//example.wxr.webizing.org/0.5/MultiTarget(Muzi)">MultiTarget(Muzi)</paper-item>
+							<paper-item on-click="onChangeHtml" href="//example.wxr.webizing.org/0.5/CylinderTarget">CylinderTarget</paper-item>
+							<paper-item on-click="onChangeHtml" href="//example.wxr.webizing.org/0.5/BeaconSpace">BeaconSpace</paper-item>
+							<paper-item on-click="onChangeHtml" href="//example.wxr.webizing.org/0.5/Beacon(submarine)">Beacon(submarine)</paper-item>
+							<paper-item on-click="onChangeHtml" href="//example.wxr.webizing.org/0.5/CSS3DObject">CSS3DObject</paper-item>
+							<paper-item on-click="onChangeHtml" href="//example.wxr.webizing.org/0.5/IndustrialPumpRoom">IndustrialPumpRoom</paper-item>
+							<paper-item on-click="onChangeHtml" href="//example.wxr.webizing.org/0.5/meshClick">meshClick</paper-item>
+							<paper-item on-click="onChangeHtml" href="//example.wxr.webizing.org/0.5/livinglab">livingLab</paper-item>
+							<paper-item on-click="onChangeHtml" href="//example.wxr.webizing.org/0.5/solar_system">solar_system</paper-item>
+							<paper-item on-click="onChangeHtml" href="//example.wxr.webizing.org/0.5/QRCode">QRCode</paper-item>
+							<paper-item on-click="onChangeHtml" href="//example.wxr.webizing.org/0.5/TransformControls">TransformControls</paper-item>
+							<paper-item on-click="onChangeHtml" href="//example.wxr.webizing.org/0.5/scale">scale</paper-item>
+							<paper-item on-click="onChangeHtml" href="//example.wxr.webizing.org/0.5/editor">editor</paper-item>
 						</paper-listbox>
 					</paper-dropdown-menu>
 				</paper-item>
@@ -288,7 +291,7 @@
 
 		<!-- 오른쪽 dropdown에서 about -->
 		<paper-dialog id="WXRAboutModal">
-			<img src="//wxrweb.webizing.org/images/tripadvisor.png">
+			<img src="https://wxrweb.webizing.org/images/tripadvisor.png">
 			<div class="WXRAboutCon">
 				Version 1.0.0
 			</div>
@@ -336,11 +339,8 @@
 
 			connectedCallback() {
 				super.connectedCallback();
-				this.$.modeDiv.innerHTML = "Mode";
 
-				$(function() {
-					this.$.modeDiv.innerHTML = WXR.ContextManager.getWXRMode();
-				}.bind(this));
+				this.$.modeDiv.innerHTML = 'Mode';
 			}
 
 			openMenuDialog() {
@@ -369,7 +369,11 @@
 
 			moveToUrl() {
 				let url = this.$.WXRAppbarCenterText.value;
+
 				if(url !== undefined) {
+					if(url.indexOf("//") === -1) {
+						url = WXRAppbarUI.PROTOCOL_PATH + url;
+					}
 					window.location.href = url;
 				}
 			}
@@ -424,7 +428,14 @@
 				let type = WXR.ContextManager.getWXRDeviceType();
 
 				if(type === WXRDevice.MOBILE) {
-					WXR.SpaceManager.changeHtml(e.currentTarget.getAttribute('href'));
+					switch(platform.os.family) {
+						case WXR.Platform.Android:
+							WXR.SpaceManager.changeHtml(e.currentTarget.getAttribute('href'));
+							break;
+						case WXR.Platform.iOS:
+							window.location.href = e.currentTarget.getAttribute('href');
+							break;
+					}
 				} else if(type === WXRDevice.DESKTOP) {
 					window.location.href = e.currentTarget.getAttribute('href');
 				}
@@ -433,5 +444,6 @@
 
 		customElements.define(WXRAppbarUI.is, WXRAppbarUI);
 
+		WXRAppbarUI.PROTOCOL_PATH = "//";
 	</script>
 </dom-module>
