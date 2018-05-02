@@ -36,6 +36,11 @@
 			handleClick(event) {
 				let glRenderer = this.renderer.getWebGLRenderer();
 				let glCamera = this.renderer.getWebGLCamera();
+
+				if(glCamera === null) {
+					return;
+				}
+
 				let mouse = new THREE.Vector2();
 				let raycaster = new THREE.Raycaster();
 				let params = event;
@@ -61,20 +66,26 @@
 					let name = object.name;
 					let dom = $('[webgl_uuid=' + object.uuid + ']')[0];
 
-					if(dom === undefined) {
-						WXR.log(WXRWorld.is, "Can not found DOM that have mesh's webgl_uuid.");
-						return;
-					}
-
 					while(dom===undefined) {
 						dom = $('[webgl_uuid=' + object.uuid + ']')[0];
 						object = object.parent;
 					}
 
-					WXREvent.dispatchEvent({type: event.type, target: dom, part: name, params: params});
+					if(dom === undefined) {
+						WXR.log(WXRWorld.is, "Can not found DOM that have mesh's webgl_uuid.");
+						return;
+					}
 
+					WXREvent.dispatchEvent({type: event.type, target: dom, part: name, params: params});
 				} else {
-					this.transformControls.detach();
+					intersects = raycaster.intersectObjects(this.transformControls.children);
+
+					if(intersects.length > 0) {
+						console.log(intersects);
+						return;
+					} else {
+						this.transformControls.detach();
+					}
 				}
 			}
 
@@ -146,7 +157,7 @@
 			}
 
 			loadDefaultCameraControls() {
-				this.defaultCameraControls = new THREE.TrackballControls(this.renderer.getWebGLCamera());
+				this.defaultCameraControls = new THREE.TrackballControls(this.renderer.getWebGLCamera(), this.renderer.getCSS3DRenderer().domElement);
 			}
 
 			animate() {
@@ -164,28 +175,31 @@
 			}
 
 			loadSpace(sceneDomElement) {
-				this.traverseConnectedCallback(sceneDomElement);
+				this.traverseOnTargetAvailable(sceneDomElement);
 			}
 
 			unloadSpace(sceneDomElement) {
 				this.traverseDisconnectedCallback(sceneDomElement);
 			}
 
-			traverseConnectedCallback(domElement) {
+			traverseOnTargetAvailable(domElement) {
 				if(domElement.tagName.startsWith(WXR.PREFIX_WXR)) {
-					domElement.connectedCallback();
+					if(domElement.onTargetAvailable !== undefined) {
+						domElement.connectedCallback();
+						domElement.onTargetAvailable({});
+					}
 				}
 
 				if (domElement.children.length > 0) {
 					for (let childDom of domElement.children) {
-						this.traverseConnectedCallback(childDom);
+						this.traverseOnTargetAvailable(childDom);
 					}
 				}
 			}
 
 			traverseDisconnectedCallback(domElement) {
 				if(domElement.tagName.startsWith(WXR.PREFIX_WXR)) {
-					domElement.disconnectedCallback();
+					domElement.removeObject();
 				}
 
 				if (domElement.children.length > 0) {
