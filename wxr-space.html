@@ -25,7 +25,7 @@
 				return {
 					src: {type: String},
 					enable: Boolean,
-					disable: Boolean
+					disabled: Boolean
 				};
 			}
 
@@ -43,16 +43,16 @@
 			}
 
 			onCheckIn(event) {
+				this.removeAttribute("disabled");
 				this.setAttribute("enable", "");
-				this.removeAttribute("disable");
 				this.parentElement.loadSpace(this);
 
 				WXR.log(WXRSpace.is, "enter " + this.src);
 			}
 
 			onCheckout(event) {
-				this.setAttribute("disable", "");
 				this.removeAttribute("enable");
+				this.setAttribute("disabled", "");
 				this.parentElement.unloadSpace(this);
 
 				WXR.log(WXRSpace.is, "exit " + this.src);
