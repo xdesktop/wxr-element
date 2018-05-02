@@ -16,7 +16,8 @@
 					easing: {type: String, value: "linear"}, // TWEEN.Easing.Linear, Quadratic, Cubic, Quartic, Quintic, Sinusoidal, Exponential, Circular, Elastic, Back, Bounce
 					radian: {type: Number},
 					radius: {type: Number},
-					step: {type: Number}
+					step: {type: Number},
+					type: {type: String} // revolution, rotation, movement
 				};
 			}
 
@@ -37,8 +38,7 @@
 			onTargetAvailable(event) {
 				let clock = new THREE.Clock();
 
-				this.stepWebGL = clock.getElapsedTime() * 0.01;
-				this.stepCSS3D = clock.getElapsedTime() * 0.01;
+				this.step = clock.getElapsedTime() * 0.01;
 
 				if (typeof this.to === 'string') {
 					this.to = this.to.split(" ");
@@ -48,73 +48,60 @@
 					case WXRAnimation.VALUE_EASING_LINEAR:
 						this.easing = TWEEN.Easing.Linear.None;
 						break;
+					case WXRAnimation.VAlLUE_EASING_QUADRATIC_OUT:
+						this.easing = TWEEN.Easing.Quadratic.Out;
+						break;
 				}
 
 				if (this.parentElement.webGLObject3D !== WXRAnimation.MODEL_UNLOADED) {
-					switch (this.attribute) {
-						case WXRAnimation.VALUE_POSITION:
-							this.fromWebGL = this.parentElement.webGLObject3D.position;
-							this.fromCSS3D = this.parentElement.CSS3DObject3D.position;
-							break;
-						case WXRAnimation.VALUE_ROTATION:
-							this.fromWebGL = this.parentElement.webGLObject3D.rotation;
-							this.fromCSS3D = this.parentElement.CSS3DObject3D.rotation;
-							break;
-					}
-					this.startAnimation();
+					this.onModelLoaded();
 				}
 			}
 
 			onModelLoaded() {
-				switch (this.attribute) {
-					case WXRAnimation.VALUE_POSITION:
+				switch (this.type) {
+					case WXRAnimation.TYPE_MOVEMENT:
+					case WXRAnimation.TYPE_REVOLUTION:
 						this.fromWebGL = this.parentElement.webGLObject3D.position;
-						this.fromCSS3D = this.parentElement.CSS3DObject3D.position;
 						break;
-					case WXRAnimation.VALUE_ROTATION:
+					case WXRAnimation.TYPE_ROTATION:
 						this.fromWebGL = this.parentElement.webGLObject3D.rotation;
-						this.fromCSS3D = this.parentElement.CSS3DObject3D.rotation;
 						break;
 				}
 				this.startAnimation();
 			}
 
 			startAnimation() {
-				this.tweenWebGL = new TWEEN.Tween(this.fromWebGL)
-					.to({x: this.to[0], y: this.to[1], z: this.to[2]}, this.duration)
+				let coords = { x: this.fromWebGL.x, y: this.fromWebGL.y, z: this.fromWebGL.z};
+				let target = {x: this.to[0]*1, y: this.to[1]*1, z: this.to[2]*1};
+				this.tween = new TWEEN.Tween(coords)
+					.to({x: target.x, y: target.y, z: target.z}, this.duration)
 					.easing(this.easing)
 					.repeat(this.repeat);
 
-				this.tweenCSS3D = new TWEEN.Tween(this.fromCSS3D)
-					.to({x: this.to[0], y: this.to[1], z: this.to[2]}, this.duration)
-					.easing(this.easing)
-					.repeat(this.repeat);
-
-				if (this.radian !== undefined && this.radius !== undefined) {  //공전
-					this.tweenWebGL.onUpdate(() => {
-						this.stepWebGL += this.radian;
-						this.parentElement.webGLObject3D.position.set(Math.sin(this.stepWebGL) * this.radius, this.parentElement.webGLObject3D.position.y, Math.cos(this.stepWebGL) * this.radius);
+				if (this.radian !== undefined && this.radius !== undefined && this.type === WXRAnimation.TYPE_REVOLUTION) {  //공전
+					this.tween.onUpdate(() => {
+						this.step += this.radian;
+						this.parentElement.webGLObject3D.position.set(Math.sin(this.step) * this.radius, this.parentElement.webGLObject3D.position.y, Math.cos(this.step) * this.radius);
+						this.parentElement.CSS3DObject3D.position.set(Math.sin(this.step) * this.radius * WXRAnimation.CSSFactor, this.parentElement.CSS3DObject3D.position.y, Math.cos(this.step) * this.radius * WXRAnimation.CSSFactor);
 					});
-					this.tweenCSS3D.onUpdate(() => {
-						this.stepCSS3D += this.radian;
-						this.parentElement.CSS3DObject3D.position.set(Math.sin(this.stepCSS3D) * this.radius * 1000, this.parentElement.CSS3DObject3D.position.y, Math.cos(this.stepCSS3D) * this.radius * 1000);
+				} else if( this.type === WXRAnimation.TYPE_ROTATION ){
+					this.tween.onUpdate(() => {
+						this.parentElement.webGLObject3D.rotation.set(coords.x, coords.y, coords.z);
+						this.parentElement.CSS3DObject3D.rotation.set(coords.x, coords.y, coords.z);
 					});
-				} else {
-					this.tweenWebGL.onUpdate(() => {
-						this.parentElement.webGLObject3D.rotation.set(this.tweenWebGL._object._x, this.tweenWebGL._object._y, this.tweenWebGL._object._z);
-					});
-					this.tweenCSS3D.onUpdate(() => {
-						this.parentElement.CSS3DObject3D.rotation.set(this.tweenCSS3D._object._x, this.tweenCSS3D._object._y, this.tweenCSS3D._object._z);
+				} else if (this.type === WXRAnimation.TYPE_MOVEMENT) {
+					this.tween.onUpdate(() => {
+						this.parentElement.webGLObject3D.position.set(coords.x, coords.y, coords.z);
+						this.parentElement.CSS3DObject3D.position.set(coords.x, coords.y, coords.z).multiplyScalar(WXRAnimation.CSSFactor);
 					});
 				}
 
-				this.tweenWebGL.start();
-				this.tweenCSS3D.start();
+				this.tween.start();
 			}
 
 			removeAnimation() {
-				this.tweenWebGL.stop();
-				this.tweenCSS3D.stop();
+				this.tween.stop();
 			}
 		}
 
@@ -122,7 +109,12 @@
 
 		WXRAnimation.VALUE_POSITION = "position";
 		WXRAnimation.VALUE_ROTATION = "rotation";
-		WXRAnimation.VALUE_EASING_LINEAR = "linear"
+		WXRAnimation.VALUE_EASING_LINEAR = "linear";
+		WXRAnimation.VAlLUE_EASING_QUADRATIC_OUT = "quadraticOut";
 		WXRAnimation.MODEL_UNLOADED = "unloaded";
+		WXRAnimation.TYPE_REVOLUTION = "revolution";
+		WXRAnimation.TYPE_ROTATION = "rotation";
+		WXRAnimation.TYPE_MOVEMENT = "movement";
+		WXRAnimation.CSSFactor = 1000;
 	</script>
 </dom-module>
