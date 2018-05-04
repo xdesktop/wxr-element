@@ -33,7 +33,7 @@
 			onTargetAvailable (event) {
 				let group = new THREE.Group();
 				let targetObject = new THREE.Object3D();
-				let targetPosition = this.target.split(" ");
+				let targetPosition = this.lookAt.split(" ");
 				targetObject.position.set(targetPosition[0], targetPosition[1], targetPosition[2]);
 
 				group.add(targetObject);
