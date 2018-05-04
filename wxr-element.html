@@ -115,9 +115,9 @@
 
 			computeStyleTransform(css) {
 				let transform = [];
-				let position = new THREE.Vector3(0, 0, 0);
-				let rotation = new THREE.Vector3(0, 0, 0);
-				let scale = new THREE.Vector3(1, 1, 1);
+				let position = this.webGLObject3D.position;
+                let rotation = this.webGLObject3D.rotation;
+                let scale = this.webGLObject3D.scale;
 
 				for(let leftBracketSplit of css.split("3d(")){
 
