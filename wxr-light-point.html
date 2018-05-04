@@ -1,0 +1,48 @@
+<link rel="import" href="./polymerImport.html">
+
+<dom-module id="wxr-light">
+	<script>
+		'use strict';
+
+		class WXRLightPoint extends WXRLight {
+			constructor() {
+				super();
+			}
+
+			static get is() {
+				return "wxr-light-point";
+			}
+
+			static get properties() {
+				return {
+					distance: {
+					    type: Number,
+						value: 0
+					},
+					decay: {
+					    type: Number,
+						value: 1
+					}
+				};
+			}
+
+			connectedCallback() {
+				super.connectedCallback();
+
+				if(this.parentElement.tagName.startsWith(WXR.PREFIX_WXR)) {
+					this.addEventListener(WXREvent.TARGET_ABAILABLE, this.onTargetAvailable);
+				}
+			}
+
+			onTargetAvailable (event) {
+				let light = new THREE.PointLight(this.color, this.intensity, this.distance, this.decay);
+
+				this.addWebGLObject3D(light);
+				this.addCSS3DObject3D(this.CSS3DObject3D);
+			}
+		}
+
+		customElements.define(WXRLightPoint.is, WXRLightPoint);
+
+	</script>
+</dom-module>
