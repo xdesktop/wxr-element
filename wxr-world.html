@@ -29,7 +29,7 @@
 				this.webGLObject3D = this.renderer.getWebGLScene();
 				this.CSS3DObject3D = this.renderer.getCSS3DScene();
 
-				document.addEventListener(WXREvent.ON_MOUSE_DOWN, this.handleClick.bind(this), false);
+				document.addEventListener(WXREvent.GEOMETRY_ON_CLICK, this.handleClick.bind(this), false);
 				document.addEventListener(WXREvent.ON_TOUCH_START, this.handleClick.bind(this), false);
 			}
 
@@ -45,7 +45,7 @@
 				let raycaster = new THREE.Raycaster();
 				let params = event;
 
-				if (event.type === WXREvent.ON_MOUSE_DOWN){
+				if (event.type === WXREvent.GEOMETRY_ON_CLICK){
 					mouse.x = (event.clientX / glRenderer.domElement.clientWidth) * 2 - 1;
 					mouse.y = -( event.clientY / glRenderer.domElement.clientHeight ) * 2 + 1;
 				} else if (event.type === WXREvent.ON_TOUCH_START) {
@@ -71,12 +71,14 @@
 						object = object.parent;
 					}
 
+					this.transformControls.attach(object);
+
 					if(dom === undefined) {
 						WXR.log(WXRWorld.is, "Can not found DOM that have mesh's webgl_uuid.");
 						return;
 					}
 
-					WXREvent.dispatchEvent({type: event.type, target: dom, part: name, params: params});
+					WXREvent.dispatchEvent({type: WXREvent.ON_MOUSE_DOWN, target: dom, part: name, params: params});
 				} else {
 					intersects = raycaster.intersectObjects(this.transformControls.children);
 
@@ -117,10 +119,7 @@
 			}
 
 			loadDefaultLight() {
-				this.light = new THREE.DirectionalLight(0xf0f0f0);
-				this.light.lookAt(new THREE.Vector3(0, 0, 0));
-				this.light.position.set(0, 100, 100);
-
+				this.light = new THREE.AmbientLight(0xf0f0f0, 0.4);
 				this.webGLObject3D.add(this.light);
 			}
 
