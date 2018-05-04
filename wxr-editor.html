@@ -6,7 +6,7 @@
 			#WXREditor {
 				margin: 0px;
 				padding: 0px;
-				height: 6vmin;
+				height: 50px;
 				color: #FFFFFF;
 				background-color: #2196F3;
 				z-index: 1000;
@@ -14,7 +14,7 @@
 
 			#userButton, #menuButton, #modeButton{
 				position: absolute;
-				width: 5vmin !important;
+				width: 50px !important;
 				height: 50px !important;
 				padding: 0px;
 				color: black;
@@ -39,21 +39,21 @@
 
 			#menuIcon, #modeIcon {
 				color: #FFFFFF;
-				width: 5vmin;
-				height: 5vmin;
+				width: 50px !important;
+				height: 50px !important;
 			}
 
 			#userIcon {
 				color: #FFFFFF;
 				margin-top: 10px;
-				width: 5vmin;
-				height: 5vmin;
+				width: 50px !important;
+				height: 50px !important;
 			}
 
 			#WXREditorCenterText {
 				position: absolute;
 				top: 5px;
-				left: 10vmin;
+				left: 100px;
 				width: 80vw;
 				height: 40px;
 				border: 0px;
@@ -68,8 +68,8 @@
 				float: right;
 				margin-top: 10px;
 				margin-right: 10px;
-				width: 5vw;
-				height: 5vw;
+				width: 50px;
+				height: 50px;
 				background-color: #2196F3;
 				color: white;
 				border-radius: 5px;
@@ -78,7 +78,7 @@
 			#WXRLeftSidebar, #WXRRightSidebar {
 				position: absolute;
 				top: 15vh;
-				width: 30vmin;
+				width: 30vw;
 				height: 84vh;
 				margin: 0px;
 				background-color: #FCFCFC;
@@ -109,154 +109,18 @@
 				height: 7vw;
 			}
 
-			#modal {
+			#WXRWorkspaceManagement, #WXRUserProfile {
 				width: 70vw;
-				height: 80vh;
+			}
+
+			#WXRCodepen{
+				width: 90vw;
 			}
 
 			.deviceIcon {
 				width: 40px;
 				height: 40px;
 			}
-
-			#WXRModeModalList {
-				padding: 0px;
-				margin: 0px;
-			}
-
-			.ModeList {
-				border-bottom: 1px solid #EAEAEA;
-			}
-
-			.ModeList > input {
-				margin-right: 10px;
-			}
-
-			#WXRAboutModal > img {
-				width: 100px;
-				height: 100px;
-				padding: 0px;
-				border-radius: 50%;
-				margin-left: 50px;
-				margin-bottom: 10px;
-				border: 8px solid #2196F3;
-			}
-
-			.WXRAboutCon {
-				width: 150px;
-				margin: 8px 25px;
-				padding: 0 10px;
-				text-align: center;
-				font-weight: bold;
-				border-bottom: 1px solid #8C8C8C;
-			}
-
-
-
-			#WXRMenuList {
-				padding: 0px;
-				margin: 0px;
-				background-color: #FCFCFC;
-			}
-
-
-
-			.WXRMenu > iron-icon {
-				width: 15%;
-				margin-right: 15px;
-				color: #2196F3;
-			}
-
-			.WXRMenu > paper-dropdown-menu {
-				width: 85%;
-			}
-
-			#WXRLeftSidebarClose {
-				width: 10%;
-				min-height: 35px;
-				padding-left: 85%;
-				padding-right: 5%;
-				background-color: #EAEAEA;
-			}
-
-			#WXREVModal > paper-item {
-				width: 20px;
-				height: 50px;
-				padding: 0px 15px;
-				margin: 20px 20px;
-				border-radius: 50%;
-				font-size: 30px;
-				font-weight: bold;
-				text-align: center;
-				color: #FFFFFF;
-				float: left;
-			}
-
-			#urlBtn {
-				position: absolute;
-				right: 10vw;
-				top: 0px;
-				width: 10vw;
-				height: 50px;
-				padding: 5px;
-				color: #8C8C8C;
-				z-index: 1001;
-			}
-
-			#WXREditorDrop > paper-item {
-				color: #000000;
-			}
-
-			#modeBox {
-				position: absolute;
-				bottom: 5px;
-				left: 5px;
-			}
-
-			#modeDiv{
-				width: 60px;
-				height: 47px;
-				padding-top: 13px;
-				font-weight: 500;
-				color: #FFF;
-				background-color: #2196F3;
-				border-radius: 15px;
-				line-height: 36px;
-				font-size: 20px;
-				text-align:center;
-			}
-
-			#EVmodeBox {
-				position: absolute;
-				bottom: 5px;
-				right: 5px;
-				display: none;
-			}
-
-			#EVmodeBox > div {
-				margin-left: 5px;
-				float: left;
-			}
-
-			#EVmodeBox > div > div{
-				width: 80px;
-				height: 25px;
-				margin: 5px 0px;
-				text-align: center;
-				padding-top: 7px;
-				color: #FFF;
-				background-color: #FFCD12;
-				border-radius: 10px;
-			}
-
-			#VBtn {
-				background-color: #FFCD12;
-			}
-
-			#EBtn {
-				background-color: #8C8C8C;
-			}
-
 
 		</style>
 		<!-- app bar -->
@@ -266,11 +130,11 @@
 						   vertical-offset="50">
 			<paper-icon-button id="menuIcon" slot="dropdown-trigger" icon="menu"></paper-icon-button>
 			<div slot="dropdown-content" id="WXRMenuDrop">
-				<paper-item on-click="manageWorkspace">Workspace 관리</paper-item>
-				<paper-item on-click="openModeDialog" id="codeEditor">source code</paper-item>
-				<paper-item on-click="openAboutDialog" id="htmlExport">HTML Export</paper-item>
-				<paper-item on-click="openEVDialog" id="saveCMS">Save</paper-item>
-				<paper-item on-click="openEVDialog" id="exit">나가기</paper-item>
+				<paper-item on-click="openWorkspaceManagement">Workspace 관리</paper-item>
+				<paper-item on-click="openSourceCode" id="codeEditor">source code</paper-item>
+				<paper-item on-click="exportHTML" id="htmlExport">HTML Export</paper-item>
+				<paper-item on-click="saveContents" id="saveCMS">Save</paper-item>
+				<paper-item on-click="exit" id="exit">나가기</paper-item>
 			</div>
 		</paper-menu-button>
 		<span slot="top" class="title" id="WXREditorCenterText" >Title</span>
@@ -282,9 +146,9 @@
 				<span>User</span>
 			</paper-button>
 			<div slot="dropdown-content" id="WXRUserDrop">
-				<paper-item on-click="showUserProfile" id="profile">Profile</paper-item>
-				<paper-item on-click="showUserDevices" id="device">Devices</paper-item>
-				<paper-item on-click="showUserWorkspace" id="myWorkspace">My WorkSpace</paper-item>
+				<paper-item on-click="openUserProfile" id="profile">Profile</paper-item>
+				<paper-item on-click="showMyDevices" id="device">Devices</paper-item>
+				<paper-item on-click="showMyWorkspaces" id="myWorkspace">My WorkSpace</paper-item>
 				<paper-item on-click="logout" id="logout">Logout</paper-item>
 			</div>
 		</paper-menu-button>
@@ -307,39 +171,7 @@
 			<paper-item class="WXRMenu">
 				<h2>Node</h2>
 			</paper-item>
-			<csak-tree branchiconopen="vaadin:minus-square-o" branchicon="vaadin:plus-square-o"
-					   data='{
-						  "children ": [
-								{
-								  "name": "Branch",
-								  "children": [
-									{
-									  "name": "Branch",
-									  "children": [
-									  {
-										"name": "Leaf"
-									  },
-									  {
-										"name": "Leaf"
-									  }
-									]
-									}   ,
-									{
-									  "name": "Branch",
-									  "children": [
-									  {
-										"name": "Leaf"
-									  },
-									  {
-										"name": "Leaf"
-									  }
-									]
-									}
-								  ]
-								}
-							  ]
-							}'
-		    expanded>
+			<csak-tree id="treeView" branchiconopen="vaadin:minus-square-o" branchicon="vaadin:plus-square-o" expanded>
 			</csak-tree>
 			<paper-item class="WXRMenu">
 				<h2>Transform</h2>
@@ -357,24 +189,24 @@
 				<h2>Information</h2>
 			</paper-item>
 			<paper-item class="WXRMenu">
-				<span>type</span>wxr-camera
+				<label><b>type: &nbsp;</b></label> <p id="WXRInformationType"></p>
 			</paper-item>
 			<paper-item class="WXRMenu">
-				<span>Name</span>main_camera
+				<label><b>Name: &nbsp;</b></label> <p id="WXRInformationName"></p>
 			</paper-item>
 			<paper-collapse-item header="<b>Position</b>">
 				<table>
 					<tr>
 						<td>
-							<paper-input class="WXRSidebarValueInput" label="x" value="0" type="number">
+							<paper-input class="WXRSidebarValueInput" id="WXRInformationPositionX" label="x" value="0" type="number">
 							</paper-input>
 						</td>
 						<td>
-							<paper-input class="WXRSidebarValueInput" label="y" value="0" type="number">
+							<paper-input class="WXRSidebarValueInput" id="WXRInformationPositionY" label="y" value="0" type="number">
 							</paper-input>
 						</td>
 						<td>
-							<paper-input class="WXRSidebarValueInput" label="z" value="0" type="number">
+							<paper-input class="WXRSidebarValueInput" id="WXRInformationPositionZ" label="z" value="0" type="number">
 							</paper-input>
 						</td>
 					</tr>
@@ -384,15 +216,15 @@
 				<table>
 					<tr>
 						<td>
-							<paper-input class="WXRSidebarValueInput" label="x" value="0" type="number">
+							<paper-input class="WXRSidebarValueInput" id="WXRInformationRotationX" label="x" value="0" type="number">
 							</paper-input>
 						</td>
 						<td>
-							<paper-input class="WXRSidebarValueInput" label="y" value="0" type="number">
+							<paper-input class="WXRSidebarValueInput" id="WXRInformationRotationY" label="y" value="0" type="number">
 							</paper-input>
 						</td>
 						<td>
-							<paper-input class="WXRSidebarValueInput" label="z" value="0" type="number">
+							<paper-input class="WXRSidebarValueInput" id="WXRInformationRotationZ" label="z" value="0" type="number">
 							</paper-input>
 						</td>
 					</tr>
@@ -402,15 +234,15 @@
 				<table>
 					<tr>
 						<td>
-							<paper-input class="WXRSidebarValueInput" label="x" value="0" type="number">
+							<paper-input class="WXRSidebarValueInput" id="WXRInformationScaleX" label="x" value="0" type="number">
 							</paper-input>
 						</td>
 						<td>
-							<paper-input class="WXRSidebarValueInput" label="y" value="0" type="number">
+							<paper-input class="WXRSidebarValueInput" id="WXRInformationScaleY" label="y" value="0" type="number">
 							</paper-input>
 						</td>
 						<td>
-							<paper-input class="WXRSidebarValueInput" label="z" value="0" type="number">
+							<paper-input class="WXRSidebarValueInput" id="WXRInformationScaleZ" label="z" value="0" type="number">
 							</paper-input>
 						</td>
 					</tr>
@@ -420,22 +252,22 @@
 				Lots of very interesting content.
 			</paper-collapse-item>
 			<paper-collapse-item header="<b>Color</b>">
-				<paper-input value="#ffffff" type="text input">
+				<paper-input id="WXRInformationColor" value="" type="text input">
 				</paper-input>
 			</paper-collapse-item>
 			<paper-collapse-item header="<b>Texture</b>">
-				<paper-input value="filename" type="text input">
+				<paper-input id="WXRInformationTexture" value="" type="text input">
 				</paper-input>
 			</paper-collapse-item>
 		</paper-dialog>
 
-		<paper-dialog id="modal" modal>
-			<b><h2>Workspace 관리</h2></b>
+		<paper-dialog id="WXRWorkspaceManagement" modal>
+			<b><h2 style="margin-bottom:  0px; margin-top: 30px; margin-left:20px;">Workspace 관리</h2></b>
 
-			<paper-dialog-scrollable>
-				<paper-input label="Title" type="text input" placeholder="Workspace name"></paper-input>
-				<paper-input label="Thumbnail" type="text input" placeholder="Thumbnail"></paper-input>
-				<paper-textarea label="Context" rows="5" placeholder="context"></paper-textarea>
+			<paper-dialog-scrollable style="margin-top: 0; padding-top: 15px;">
+				<paper-input id="WXRWorkspaceManagementTitle" label="Title" type="text input" placeholder="Workspace name"></paper-input>
+				<paper-input id="WXRWorkspaceManagementTumbnail" label="Thumbnail" type="text input" placeholder="Thumbnail"></paper-input>
+				<paper-textarea id="WXRWorkspaceManagementContext" label="Context" rows="5" placeholder="context"></paper-textarea>
 
 				<h2>Interaction Device requirements</h2>
 				<table width="100%" style="text-align:center;">
@@ -507,144 +339,246 @@
 					</tr>
 				</table>
 
-				<paper-input label="URI" type="text input" placeholder="Workspace name"></paper-input>
+				<paper-input id="WXRWorkspaceManagementURI" label="URI" type="text input" placeholder="Workspace name"></paper-input>
+
 			</paper-dialog-scrollable>
 			<div class="buttons">
-				<paper-button dialog-confirm autofocus>확인</paper-button>
+				<paper-button dialog-confirm autofocus on-click="putWorkspaceManagement">확인</paper-button>
+			</div>
+		</paper-dialog>
+
+		<paper-dialog id="WXRCodepen">
+			<b><h2 style="margin-bottom:  0px; margin-top: 30px; margin-left:20px;">Source code</h2></b>
+
+			<super-code id="codePen" theme=".cm-s-monokai" value="-"></super-code>
+
+			<div class="buttons">
+				<paper-button dialog-confirm autofocus on-click="putUserProfile">확인</paper-button>
+			</div>
+		</paper-dialog>
+
+		<paper-dialog id="WXRUserProfile">
+			<b><h2 style="margin-bottom:  0px; margin-top: 30px; margin-left:20px;">User Profile</h2></b>
+
+			<paper-dialog-scrollable style="margin-top: 0; padding-top: 15px;">
+				<div id="WXRUserProfileThumbnail">
+					asdf
+				</div>
+			</paper-dialog-scrollable>
+
+			<div class="buttons">
+				<paper-button dialog-confirm autofocus on-click="putUserProfile">확인</paper-button>
 			</div>
 		</paper-dialog>
 	</template>
 
 	<script>
 
-		class WXREditorUI extends WXRUI {
-			constructor() {
-				super();
+        class WXREditorUI extends WXRUI {
+            constructor() {
+                super();
+            }
+
+            static get is() {
+                return "wxr-editor";
+            }
+
+            connectedCallback() {
+                super.connectedCallback();
+
+                this.treeMap = new Map();
+
+                window.addEventListener('WebComponentsReady', function() {
+                    let data = JSON.stringify(this.generateTree($('wxr-world')[0]));
+
+                    this.$.treeView.setAttribute('data', data);
+                    this.$.treeView.onclick = this.onTreeClick.bind(this);
+
+                    let url = "https://localhost/view/id";
+                    let urlParse = url.split("/")
+                    this.workspaceId = urlParse[urlParse.length-1];
+                    this.getWorkspaceManagement(this.workspaceId);
+
+                    this.$.codePen.editor.setValue($('wxr-world')[0].outerHTML);
+                }.bind(this));
+                // this.$.modeDiv.innerHTML = 'Mode';
+            }
+
+            updateEditor() {
+                console.log(this);
+                this.$.codePen.editor.refresh();
+            }
+
+            generateTree(node) {
+                let child = {};
+                child.name = node.tagName;
+                child.id = THREE.Math.generateUUID();
+
+                this.treeMap.set(child.id, node);
+
+                if (node.children.length > 0) {
+                    child.children = [];
+
+                    for (let ele of node.children) {
+                        child.children.push(this.generateTree(ele));
+                    }
+
+                } else {
+                    child.name = node.tagName;
+                }
+                return child;
+            }
+
+            onTreeClick(event) {
+                let treeNode = event.detail.target.__data.selectedItem;
+                let wxrNode = this.treeMap.get(treeNode.id);
+                this.setInformation(wxrNode);
+            }
+
+            setInformation(dom) {
+                if(dom.webGLObject3D !== undefined) {
+                    this.$.WXRInformationType.innerText = dom.tagName;
+                    this.$.WXRInformationName.innerText = dom.name;
+
+                    this.$.WXRInformationPositionX.value = dom.webGLObject3D.position.x*1;
+                    this.$.WXRInformationPositionY.value = dom.webGLObject3D.position.y*1;
+                    this.$.WXRInformationPositionZ.value = dom.webGLObject3D.position.z*1;
+
+                    this.$.WXRInformationRotationX.value = dom.webGLObject3D.rotation.x*1;
+                    this.$.WXRInformationRotationY.value = dom.webGLObject3D.rotation.y*1;
+                    this.$.WXRInformationRotationZ.value = dom.webGLObject3D.rotation.z*1;
+
+                    this.$.WXRInformationScaleX.value = dom.webGLObject3D.scale.x*1;
+                    this.$.WXRInformationScaleY.value = dom.webGLObject3D.scale.y*1;
+                    this.$.WXRInformationScaleZ.value = dom.webGLObject3D.scale.z*1;
+                    this.$.WXRInformationColor.value = dom.color;
+
+                    if(dom.webGLObject3D.material !== undefined) {
+                        this.$.WXRInformationTexture.value = dom.texture;
+                    }
+                }
+            }
+
+            getWorkspaceManagement(workspaceId) {
+                // $.ajax({
+                // 	url: "https://localhost/workspaces/"+workspaceId,
+                // 	success: data => {
+                // 		if(data.status === "ok") {
+                //            let message = data.message[0];
+                //
+                //            this.$.WXREditorCenterText.innerText = message.name;
+                //
+                //            this.$.WXRWorkspaceManagementTitle.value = message.name;
+                //            this.$.WXRWorkspaceManagementThumbnail.value = message.thumbnail;
+                //            this.$.WXRWorkspaceManagementContext.value = message.description;
+                //            this.$.WXRWorkspaceManagementURI.value = location.href;
+                // 		}
+                // 	},
+                // 	error: err => {
+                // 	    console.error("can not found workspace")
+                // 	}
+                // })
+            }
+
+            putWorkspaceManagement(){
+                // let formData = new FormData();
+                // formData.append('name', WXRWorkspaceManagementTitle.value)
+                // formData.append('description', this.$.WXRWorkspaceManagementContext.value)
+                // formData.append('thumbnail', this.$.WXRWorkspaceManagementThumbnail.value);
+                //
+                // $.ajax({
+                // 	type: "put",
+                //    url: "https://localhost/workspaces/" + this.workspaceId,
+                // 	data : formData,
+                // 	processType: false,
+                // 	contentType: false,
+                // 	success: (data, textStatus, jqXHR) => {
+                // 	    WXR.log("WXREditor", "put success");
+                //    }
+                // });
+            }
+
+            toggleSidebar() {
+                if(this.$.WXRLeftSidebar.style.display === "none" && this.$.WXRRightSidebar.style.display === "none") {
+                    this.$.WXRLeftSidebar.open();
+                    this.$.WXRRightSidebar.open();
+                } else {
+                    this.$.WXRLeftSidebar.close();
+                    this.$.WXRRightSidebar.close();
+                }
+            }
+
+            openWorkspaceManagement() {
+                this.$.WXRWorkspaceManagement.open();
+                this.$.menuButton.close();
+            }
+
+            openSourceCode() {
+                this.$.WXRCodepen.open();
+                this.$.codePen.editor.setValue($('wxr-world')[0].outerHTML);
+                setTimeout(this.$.codePen.editor.refresh(), 1);
+
+                this.$.menuButton.close();
+            }
+
+            exportHTML() {
+                this.$.menuButton.close();
+
+                let elHtml = document.documentElement.outerHTML;
+                let link = document.createElement('a');
+                let mimeType = 'text/html';
+
+                link.setAttribute('download', "index.html");
+                link.setAttribute('href', 'data:' + mimeType  +  ';charset=utf-8,' + encodeURIComponent(elHtml));
+                link.click();
+            }
+
+            saveContents() {
+                this.$.menuButton.close();
+            }
+
+            exit() {
+                this.$.menuButton.close();
+            }
+
+            setMode3D() {
+                this.$.modeButton.close();
+                // this.$.modeDiv.innerHTML = "3D";
+                WXR.ContextManager.setWXRMode(WXRDevice.MODE3D);
+            }
+
+            setModeVR() {
+                this.$.modeButton.close();
+                // this.$.modeDiv.innerHTML = "VR";
+                WXR.ContextManager.setWXRMode(WXRDevice.VR);
+            }
+
+            setModeAR() {
+                this.$.modeButton.close();
+                // this.$.modeDiv.innerHTML = "AR";
+                WXR.ContextManager.setWXRMode(WXRDevice.AR);
+            }
+
+            openUserProfile() {
+                this.$.userButton.close();
+                this.$.WXRUserProfile.open();
+            }
+
+            showMyDevices() {
+
 			}
 
-			static get is() {
-				return "wxr-editor";
-			}
-
-			connectedCallback() {
-				super.connectedCallback();
-
-				// this.$.modeDiv.innerHTML = 'Mode';
-			}
-			//
-			toggleSidebar() {
-				if(this.$.WXRLeftSidebar.style.display === "none" && this.$.WXRRightSidebar.style.display === "none") {
-					this.$.WXRLeftSidebar.open();
-					this.$.WXRRightSidebar.open();
-				} else {
-					this.$.WXRLeftSidebar.close();
-					this.$.WXRRightSidebar.close();
-				}
+			showMyWorkspaces() {
 
 			}
 
-			manageWorkspace() {
-				this.$.modal.open();
-				this.$.menuButton.close();
+			logout() {
+
 			}
-			//
-			// closeMenuDialog() {
-			// 	this.$.WXRLeftSidebar.close();
-			// }
-			//
-			// openModeDialog() {
-			// 	this.$.userIcon.close();
-			// 	this.$.WXRModeModal.open();
-			// 	this.checkARMode();
-			// }
-			//
-			// openAboutDialog() {
-			// 	this.$.userIcon.close();
-			// 	this.$.WXRAboutModal.open();
-			// }
-			//
-			// openEVDialog() {
-			// 	this.$.userIcon.close();
-			// 	this.$.WXREVModal.open();
-			// }
-			//
-			// moveToUrl() {
-			// 	let url = this.$.WXREditorCenterText.value;
-			//
-			// 	if(url !== undefined) {
-			// 		if(url.indexOf("//") === -1) {
-			// 			url = WXREditorUI.PROTOCOL_PATH + url;
-			// 		}
-			// 		window.location.href = url;
-			// 	}
-			// }
-			//
-			// checkARMode() {
-			// 	let type = WXR.ContextManager.getWXRDeviceType();
-			//
-			// 	if (type === WXRDevice.DESKTOP) {
-			// 		let elementAR = this.$.ModeAR;
-			// 		elementAR.parentNode.removeChild(elementAR);
-			// 	}
-			// }
-			//
-			// setMode3D() {
-			// 	this.$.WXRModeModal.close();
-			// 	this.$.modeDiv.innerHTML = "3D";
-			// 	WXR.ContextManager.setWXRMode(WXRDevice.MODE3D);
-			// }
-			//
-			// setModeVR() {
-			// 	this.$.WXRModeModal.close();
-			// 	this.$.modeDiv.innerHTML = "VR";
-			// 	WXR.ContextManager.setWXRMode(WXRDevice.VR);
-			// }
-			//
-			// setModeAR() {
-			// 	this.$.WXRModeModal.close();
-			// 	this.$.modeDiv.innerHTML = "AR";
-			// 	WXR.ContextManager.setWXRMode(WXRDevice.AR);
-			// }
-			//
-			// setEMode() {
-			// 	this.$.WXREVModal.close();
-			// 	this.$.EVmodeBox.style.display = 'block';
-			// 	this.$.EBtn.style.backgroundColor = '#FFCD12';
-			// 	this.$.VBtn.style.backgroundColor = '#8C8C8C';
-			// }
-			//
-			// setVMode() {
-			// 	this.$.WXREVModal.close();
-			// 	this.$.EVmodeBox.style.display = 'none';
-			// 	this.$.VBtn.style.backgroundColor = '#FFCD12';
-			// 	this.$.EBtn.style.backgroundColor = '#8C8C8C';
-			// }
-			//
-			// showSetting() {
-			// 	WXRSetting.callSettingActivity();
-			// }
-			//
-			// // TO-DO: 수정 필요
-			// onChangeHtml(e) {
-			// 	let type = WXR.ContextManager.getWXRDeviceType();
-			//
-			// 	if(type === WXRDevice.MOBILE) {
-			// 		switch(platform.os.family) {
-			// 			case WXR.Platform.Android:
-			// 				WXR.SpaceManager.changeHtml(e.currentTarget.getAttribute('href'));
-			// 				break;
-			// 			case WXR.Platform.iOS:
-			// 				window.location.href = e.currentTarget.getAttribute('href');
-			// 				break;
-			// 		}
-			// 	} else if(type === WXRDevice.DESKTOP) {
-			// 		window.location.href = e.currentTarget.getAttribute('href');
-			// 	}
-			// }
-		}
+        }
 
-		customElements.define(WXREditorUI.is, WXREditorUI);
+        customElements.define(WXREditorUI.is, WXREditorUI);
 
-		WXREditorUI.PROTOCOL_PATH = "//";
+        WXREditorUI.PROTOCOL_PATH = "//";
 	</script>
-</dom-module>
+</dom-module>             
