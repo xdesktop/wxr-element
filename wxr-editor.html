@@ -78,7 +78,7 @@
 			#WXRLeftSidebar, #WXRRightSidebar {
 				position: absolute;
 				top: 15vh;
-				width: 30vw;
+				width: 25vw;
 				height: 84vh;
 				margin: 0px;
 				background-color: #FCFCFC;
@@ -105,8 +105,8 @@
 
 			.WXRTransformButton {
 				color: #2196F3;
-				width: 7vw;
-				height: 7vw;
+				width: 5.5vw;
+				height: 5.5vw;
 			}
 
 			#WXRWorkspaceManagement, #WXRUserProfile {
@@ -177,10 +177,10 @@
 				<h2>Transform</h2>
 			</paper-item>
 			<paper-item class="WXRMenu">
-				<paper-icon-button class="WXRTransformButton" id="cameraIcon" icon="camera-enhance"></paper-icon-button>
-				<paper-icon-button class="WXRTransformButton" id="translateIcon" icon="open-with"></paper-icon-button>
-				<paper-icon-button class="WXRTransformButton" id="rotateIcon" icon="3d-rotation"></paper-icon-button>
-				<paper-icon-button class="WXRTransformButton" id="scaleIcon" icon="launch"></paper-icon-button>
+				<paper-icon-button class="WXRTransformButton" id="cameraIcon" icon="camera-enhance" on-click="cameraSyncModeChange"></paper-icon-button>
+				<paper-icon-button class="WXRTransformButton" id="translateIcon" icon="open-with" on-click="changeTranslateControl"></paper-icon-button>
+				<paper-icon-button class="WXRTransformButton" id="rotateIcon" icon="3d-rotation" on-click="changeRotateControl"></paper-icon-button>
+				<paper-icon-button class="WXRTransformButton" id="scaleIcon" icon="launch" on-click="changeScaleControl"></paper-icon-button>
 			</paper-item>
 		</paper-dialog>
 
@@ -267,7 +267,7 @@
 			<paper-dialog-scrollable style="margin-top: 0; padding-top: 15px;">
 				<paper-input id="WXRWorkspaceManagementTitle" label="Title" type="text input" placeholder="Workspace name"></paper-input>
 				<paper-input id="WXRWorkspaceManagementTumbnail" label="Thumbnail" type="text input" placeholder="Thumbnail"></paper-input>
-				<paper-textarea id="WXRWorkspaceManagementContext" label="Context" rows="5" placeholder="context"></paper-textarea>
+				<paper-textarea id="WXRWorkspaceManagementDescription" label="Context" rows="5" placeholder="Description"></paper-textarea>
 
 				<h2>Interaction Device requirements</h2>
 				<table width="100%" style="text-align:center;">
@@ -284,10 +284,10 @@
 						<td>Leapmotion</td>
 					</tr>
 					<tr>
-						<td><paper-toggle-button id="oculusRadioButton" checked></paper-toggle-button></td>
-						<td><paper-toggle-button id="viveRadioButton" checked></paper-toggle-button></td>
-						<td><paper-toggle-button id="windowsRadioButton" checked></paper-toggle-button></td>
-						<td><paper-toggle-button id="leapRadioButton" checked></paper-toggle-button></td>
+						<td><paper-toggle-button id="oculusRadioButton"></paper-toggle-button></td>
+						<td><paper-toggle-button id="viveRadioButton"></paper-toggle-button></td>
+						<td><paper-toggle-button id="windowsRadioButton"></paper-toggle-button></td>
+						<td><paper-toggle-button id="leapRadioButton"></paper-toggle-button></td>
 					</tr>
 				</table>
 
@@ -374,197 +374,215 @@
 
 	<script>
 
-        class WXREditorUI extends WXRUI {
-            constructor() {
-                super();
-            }
+		class WXREditorUI extends WXRUI {
+			constructor() {
+				super();
+			}
 
-            static get is() {
-                return "wxr-editor";
-            }
+			static get is() {
+				return "wxr-editor";
+			}
 
-            connectedCallback() {
-                super.connectedCallback();
+			connectedCallback() {
+				super.connectedCallback();
 
-                this.treeMap = new Map();
+				this.treeMap = new Map();
 
-                window.addEventListener('WebComponentsReady', function() {
-                    let data = JSON.stringify(this.generateTree($('wxr-world')[0]));
+				window.addEventListener('WebComponentsReady', function() {
+					this.initWXRTree();
+					this.initWorkspaceManagement();
 
-                    this.$.treeView.setAttribute('data', data);
-                    this.$.treeView.onclick = this.onTreeClick.bind(this);
+					this.setCodePen($(WXRWorld.is)[0].outerHTML);
+				}.bind(this));
+			}
 
-                    let url = "https://localhost/view/id";
-                    let urlParse = url.split("/")
-                    this.workspaceId = urlParse[urlParse.length-1];
-                    this.getWorkspaceManagement(this.workspaceId);
+			initWXRTree() {
+				let data = JSON.stringify(this.generateTree($(WXRWorld.is)[0]));
 
-                    this.$.codePen.editor.setValue($('wxr-world')[0].outerHTML);
-                }.bind(this));
-                // this.$.modeDiv.innerHTML = 'Mode';
-            }
+				this.$.treeView.setAttribute('data', data);
+				this.$.treeView.onclick = this.onTreeClick.bind(this);
+			}
 
-            updateEditor() {
-                console.log(this);
-                this.$.codePen.editor.refresh();
-            }
+			generateTree(node) {
+				let child = {};
+				child.name = node.tagName;
+				child.id = THREE.Math.generateUUID();
 
-            generateTree(node) {
-                let child = {};
-                child.name = node.tagName;
-                child.id = THREE.Math.generateUUID();
+				this.treeMap.set(child.id, node);
 
-                this.treeMap.set(child.id, node);
+				if (node.children.length > 0) {
+					child.children = [];
 
-                if (node.children.length > 0) {
-                    child.children = [];
+					for (let ele of node.children) {
+						child.children.push(this.generateTree(ele));
+					}
 
-                    for (let ele of node.children) {
-                        child.children.push(this.generateTree(ele));
-                    }
+				} else {
+					child.name = node.tagName;
+				}
+				return child;
+			}
 
-                } else {
-                    child.name = node.tagName;
-                }
-                return child;
-            }
+			onTreeClick(event) {
+				let treeNode = event.detail.target.__data.selectedItem;
+				let wxrNode = this.treeMap.get(treeNode.id);
 
-            onTreeClick(event) {
-                let treeNode = event.detail.target.__data.selectedItem;
-                let wxrNode = this.treeMap.get(treeNode.id);
-                this.setInformation(wxrNode);
-            }
+				if(wxrNode .webGLObject3D !== undefined) {
+					this.setInformation(wxrNode);
 
-            setInformation(dom) {
-                if(dom.webGLObject3D !== undefined) {
-                    this.$.WXRInformationType.innerText = dom.tagName;
-                    this.$.WXRInformationName.innerText = dom.name;
+					$(WXRWorld.is)[0].transformControls.attach(wxrNode.webGLObject3D);
+				}
+			}
 
-                    this.$.WXRInformationPositionX.value = dom.webGLObject3D.position.x*1;
-                    this.$.WXRInformationPositionY.value = dom.webGLObject3D.position.y*1;
-                    this.$.WXRInformationPositionZ.value = dom.webGLObject3D.position.z*1;
+			initWorkspaceManagement() {
+				let worldDomElement = $(WXRWorld.is)[0];
+				this.$.WXRWorkspaceManagementTitle.value = worldDomElement.title;
+				this.$.WXRWorkspaceManagementTumbnail.value = worldDomElement.img;
+				this.$.WXRWorkspaceManagementDescription.value = worldDomElement.description;
 
-                    this.$.WXRInformationRotationX.value = dom.webGLObject3D.rotation.x*1;
-                    this.$.WXRInformationRotationY.value = dom.webGLObject3D.rotation.y*1;
-                    this.$.WXRInformationRotationZ.value = dom.webGLObject3D.rotation.z*1;
 
-                    this.$.WXRInformationScaleX.value = dom.webGLObject3D.scale.x*1;
-                    this.$.WXRInformationScaleY.value = dom.webGLObject3D.scale.y*1;
-                    this.$.WXRInformationScaleZ.value = dom.webGLObject3D.scale.z*1;
-                    this.$.WXRInformationColor.value = dom.color;
+				/* device requirement */
+				let devices = $('wxr-devices').getAttribute('required').split(", ");
 
-                    if(dom.webGLObject3D.material !== undefined) {
-                        this.$.WXRInformationTexture.value = dom.texture;
-                    }
-                }
-            }
+				for(let device of devices) {
+					switch(device) {
+						case "vive-controller":
+							this.$.viveRadioButton.checked = true;
+							break;
+						case "oculus-touch":
+							this.$.oculusRadioButton.checked = true;
+							break;
+						case "windows-spatial":
+							this.$.windowsRadioButton.checked = true;
+							break;
+						case "leap-motion":
+							this.$.leapRadioButton.checked = true;
+							break;
+					}
+				}
 
-            getWorkspaceManagement(workspaceId) {
-                // $.ajax({
-                // 	url: "https://localhost/workspaces/"+workspaceId,
-                // 	success: data => {
-                // 		if(data.status === "ok") {
-                //            let message = data.message[0];
-                //
-                //            this.$.WXREditorCenterText.innerText = message.name;
-                //
-                //            this.$.WXRWorkspaceManagementTitle.value = message.name;
-                //            this.$.WXRWorkspaceManagementThumbnail.value = message.thumbnail;
-                //            this.$.WXRWorkspaceManagementContext.value = message.description;
-                //            this.$.WXRWorkspaceManagementURI.value = location.href;
-                // 		}
-                // 	},
-                // 	error: err => {
-                // 	    console.error("can not found workspace")
-                // 	}
-                // })
-            }
+				/* User List */
+				for(let user of $('wxr-users')[0].children) {
 
-            putWorkspaceManagement(){
-                // let formData = new FormData();
-                // formData.append('name', WXRWorkspaceManagementTitle.value)
-                // formData.append('description', this.$.WXRWorkspaceManagementContext.value)
-                // formData.append('thumbnail', this.$.WXRWorkspaceManagementThumbnail.value);
-                //
-                // $.ajax({
-                // 	type: "put",
-                //    url: "https://localhost/workspaces/" + this.workspaceId,
-                // 	data : formData,
-                // 	processType: false,
-                // 	contentType: false,
-                // 	success: (data, textStatus, jqXHR) => {
-                // 	    WXR.log("WXREditor", "put success");
-                //    }
-                // });
-            }
+				}
 
-            toggleSidebar() {
-                if(this.$.WXRLeftSidebar.style.display === "none" && this.$.WXRRightSidebar.style.display === "none") {
-                    this.$.WXRLeftSidebar.open();
-                    this.$.WXRRightSidebar.open();
-                } else {
-                    this.$.WXRLeftSidebar.close();
-                    this.$.WXRRightSidebar.close();
-                }
-            }
 
-            openWorkspaceManagement() {
-                this.$.WXRWorkspaceManagement.open();
-                this.$.menuButton.close();
-            }
+			}
 
-            openSourceCode() {
-                this.$.WXRCodepen.open();
-                this.$.codePen.editor.setValue($('wxr-world')[0].outerHTML);
-                setTimeout(this.$.codePen.editor.refresh(), 1);
+			setInformation(dom) {
+				this.$.WXRInformationType.innerText = dom.tagName;
+				this.$.WXRInformationName.innerText = dom.name;
 
-                this.$.menuButton.close();
-            }
+				this.$.WXRInformationPositionX.value = dom.webGLObject3D.position.x*1;
+				this.$.WXRInformationPositionY.value = dom.webGLObject3D.position.y*1;
+				this.$.WXRInformationPositionZ.value = dom.webGLObject3D.position.z*1;
 
-            exportHTML() {
-                this.$.menuButton.close();
+				this.$.WXRInformationRotationX.value = dom.webGLObject3D.rotation.x*1;
+				this.$.WXRInformationRotationY.value = dom.webGLObject3D.rotation.y*1;
+				this.$.WXRInformationRotationZ.value = dom.webGLObject3D.rotation.z*1;
 
-                let elHtml = document.documentElement.outerHTML;
-                let link = document.createElement('a');
-                let mimeType = 'text/html';
+				this.$.WXRInformationScaleX.value = dom.webGLObject3D.scale.x*1;
+				this.$.WXRInformationScaleY.value = dom.webGLObject3D.scale.y*1;
+				this.$.WXRInformationScaleZ.value = dom.webGLObject3D.scale.z*1;
+				this.$.WXRInformationColor.value = dom.color;
 
-                link.setAttribute('download', "index.html");
-                link.setAttribute('href', 'data:' + mimeType  +  ';charset=utf-8,' + encodeURIComponent(elHtml));
-                link.click();
-            }
+				if(dom.webGLObject3D.material !== undefined) {
+					this.$.WXRInformationTexture.value = dom.texture;
+				}
+			}
 
-            saveContents() {
-                this.$.menuButton.close();
-            }
+			putWorkspaceManagement(){
+				// let formData = new FormData();
+				// formData.append('name', WXRWorkspaceManagementTitle.value)
+				// formData.append('description', this.$.WXRWorkspaceManagementContext.value)
+				// formData.append('thumbnail', this.$.WXRWorkspaceManagementThumbnail.value);
+				//
+				// $.ajax({
+				// 	type: "put",
+				//    url: "https://localhost/workspaces/" + this.workspaceId,
+				// 	data : formData,
+				// 	processType: false,
+				// 	contentType: false,
+				// 	success: (data, textStatus, jqXHR) => {
+				// 	    WXR.log("WXREditor", "put success");
+				//    }
+				// });
+			}
 
-            exit() {
-                this.$.menuButton.close();
-            }
+			toggleSidebar() {
+				if(this.$.WXRLeftSidebar.style.display === "none" && this.$.WXRRightSidebar.style.display === "none") {
+					this.$.WXRLeftSidebar.open();
+					this.$.WXRRightSidebar.open();
+				} else {
+					this.$.WXRLeftSidebar.close();
+					this.$.WXRRightSidebar.close();
+				}
+			}
 
-            setMode3D() {
-                this.$.modeButton.close();
-                // this.$.modeDiv.innerHTML = "3D";
-                WXR.ContextManager.setWXRMode(WXRDevice.MODE3D);
-            }
+			openWorkspaceManagement() {
+				this.$.WXRWorkspaceManagement.open();
+				this.$.menuButton.close();
+			}
 
-            setModeVR() {
-                this.$.modeButton.close();
-                // this.$.modeDiv.innerHTML = "VR";
-                WXR.ContextManager.setWXRMode(WXRDevice.VR);
-            }
+			openSourceCode() {
+				this.$.WXRCodepen.open();
+				this.$.menuButton.close();
 
-            setModeAR() {
-                this.$.modeButton.close();
-                // this.$.modeDiv.innerHTML = "AR";
-                WXR.ContextManager.setWXRMode(WXRDevice.AR);
-            }
+				this.setCodePen($(WXRWorld.is)[0].outerHTML);
+			}
 
-            openUserProfile() {
-                this.$.userButton.close();
-                this.$.WXRUserProfile.open();
-            }
+			setCodePen(source) {
+				this.$.codePen.editor.setValue(source);
+				setTimeout(this.$.codePen.editor.refresh(), 1);
+			}
 
-            showMyDevices() {
+			exportHTML() {
+				this.$.menuButton.close();
+
+				let elHtml = document.documentElement.outerHTML;
+				let link = document.createElement('a');
+				let mimeType = 'text/html';
+
+				link.setAttribute('download', WXREditorUI.EXPORT_HTML_FILE_NAME);
+				link.setAttribute('href', 'data:' + mimeType  +  ';charset=utf-8,' + encodeURIComponent(elHtml));
+				link.click();
+			}
+
+			saveContents() {
+				this.$.menuButton.close();
+			}
+
+			exit() {
+				this.$.menuButton.close();
+			}
+
+			setMode3D() {
+				this.$.modeButton.close();
+				// this.$.modeDiv.innerHTML = "3D";
+				WXR.ContextManager.setWXRMode(WXRDevice.MODE3D);
+				this.$.modeIcon.setAttribute('icon', 'camera-enhance');
+			}
+
+			setModeVR() {
+				this.$.modeButton.close();
+				// this.$.modeDiv.innerHTML = "VR";
+				WXR.ContextManager.setWXRMode(WXRDevice.VR);
+				this.$.modeIcon.setAttribute('icon', 'open-with');
+			}
+
+			setModeAR() {
+				this.$.modeButton.close();
+				// this.$.modeDiv.innerHTML = "AR";
+				WXR.ContextManager.setWXRMode(WXRDevice.AR);
+				this.$.modeIcon.setAttribute('icon', 'launch');
+			}
+
+			openUserProfile() {
+				this.$.WXRUserProfile.open();
+				this.$.userButton.close();
+			}
+
+			showMyDevices() {
 
 			}
 
@@ -575,10 +593,30 @@
 			logout() {
 
 			}
-        }
 
-        customElements.define(WXREditorUI.is, WXREditorUI);
+			cameraSyncModeChange() {
 
-        WXREditorUI.PROTOCOL_PATH = "//";
+			}
+
+			changeTranslateControl() {
+				$(WXRWorld.is)[0].transformControls.setMode(WXREditorUI.TRANSFORMCONTROLS_TRANSLATE);
+			}
+
+			changeRotateControl() {
+				$(WXRWorld.is)[0].transformControls.setMode(WXREditorUI.TRANSFORMCONTROLS_ROTATE);
+			}
+
+			changeScaleControl() {
+				$(WXRWorld.is)[0].transformControls.setMode(WXREditorUI.TRANSFORMCONTROLS_SCALE);
+			}
+		}
+
+		customElements.define(WXREditorUI.is, WXREditorUI);
+
+		WXREditorUI.PROTOCOL_PATH = "//";
+		WXREditorUI.TRANSFORMCONTROLS_TRANSLATE="translate";
+		WXREditorUI.TRANSFORMCONTROLS_ROTATE="rotate";
+		WXREditorUI.TRANSFORMCONTROLS_SCALE="scale";
+		WXREditorUI.EXPORT_HTML_FILE_NAME="index.html";
 	</script>
 </dom-module>             
