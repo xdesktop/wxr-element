@@ -28,8 +28,8 @@
 					near: {type: Number, value: 0.1},
 					far: {type: Number, value: 2000},
 					lookControls: {type: Boolean, value: false},
-					wasdControls: {type: Boolean, value:false}
-
+					wasdControls: {type: Boolean, value:false},
+					eyeHeight: { type: Number, value: 1 }
 				};
 			}
 
@@ -47,13 +47,13 @@
 				this.webGLObject3D.matrixAutoUpdate = false;
 				this.webGLObject3D.matrix.identity();
 				this.webGLObject3D.projectionMatrix.fromArray(event.detail.matrix);
+				this.webGLObject3D.updateProjectionMatrix();
 			}
 
 			onProjectionMatrix(event) {
 				this.webGLObject3D.matrixAutoUpdate = false;
 				this.webGLObject3D.matrix.identity();
 				this.webGLObject3D.projectionMatrix.fromArray(event.detail.matrix);
-
 				this.webGLObject3D.updateProjectionMatrix();
 			}
 
@@ -79,6 +79,7 @@
 
 				this.addWebGLObject3D(this.camera);
 				this.parentElement.onCameraReady(this.camera);
+
 				this.updateProperties({
 					fov: this.camera.fov,
 					aspect: this.camera.aspect,
@@ -91,6 +92,7 @@
 
 			updateProperties(cameraParams) {
 				let properties = Object.getOwnPropertyNames(cameraParams);
+				
 				for (let property of properties) {
 					this.setAttribute(property, cameraParams[property]);
 				}
