@@ -15,6 +15,7 @@
 		class WXRLeap extends WXRElement {
 			constructor() {
 				super();
+				this.hands = [];
 			}
 
 			static get is() {
@@ -32,21 +33,23 @@
 
 				if(this.parentElement.tagName.startsWith(WXR.PREFIX_WXR)) {
 					this.addEventListener(WXREvent.TARGET_ABAILABLE, this.onTargetAvailable);
-					this.addEventListener('WXRInteractionLeapDetected', this.onLeapDetected);
-					this.addEventListener('WXRInteractionLeapMoved', this.onLeapMoved);
-					this.addEventListener('WXRInteractionLeapMissed', this.onLeapMissed);
+					this.addEventListener(WXREventDevice.HANDGESTURE_DETECTED, this.onLeapDetected);
+					this.addEventListener(WXREventDevice.HANDGESTURE_MOVED, this.onLeapMoved);
+					this.addEventListener(WXREventDevice.HANDGESTURE_MISSED, this.onLeapMissed);
 				}
 			}
 			onTargetAvailable(e) {
-				if ((typeof(WebSocket) == 'undefined') &&
-					(typeof(MozWebSocket) != 'undefined')) {
-					WebSocket = MozWebSocket;
-				}
+				console.log('leap: onTargetAvailable', e);
 				this.createHand();
-				this.connectToWebSocket();
+				// if ((typeof(WebSocket) == 'undefined') &&
+				// 	(typeof(MozWebSocket) != 'undefined')) {
+				// 	WebSocket = MozWebSocket;
+				// }
 			}
 
 			onLeapDetected(e) {
+				console.log('leap: onLeapDetected', e);
+				this.createHand();
 				/*
 				* leapMotion Detected
 				*
@@ -55,6 +58,8 @@
 			}
 
 			onLeapMoved(e) {
+				console.log('leap: onLeapMoved', e);
+				this.updateHandPosition(e.detail.frame);
 				/*
 				* leapMotion Moved
 				*
@@ -63,6 +68,8 @@
 			}
 
 			onLeapMissed(e) {
+				console.log('leap: onLeapMissed', e);
+				this.removeHand();
 				/*
 				* leapMotion Missed
 				*
@@ -70,42 +77,42 @@
 				* */
 			}
 
-			connectToWebSocket() {
-				// Create and open the socket
-				let ws = new WebSocket("ws://localhost:6437/v6.json");
-
-				// On successful connection
-				ws.onopen = function(event) {
-					var enableMessage = JSON.stringify({enableGestures: true});
-					ws.send(enableMessage); // Enable gestures
-					var backgroundMessage = JSON.stringify({background: true});
-					ws.send(backgroundMessage); // Get frames in background
-					console.log("open");
-				};
-
-				// On message received
-				ws.onmessage = function(event) {
-					var obj = JSON.parse(event.data);
-					var str = JSON.stringify(obj, undefined, 2);
-					if(obj.id){
-						this.updateHandPosition(obj);
-						// console.log("Frame data for " + JSON.stringify(obj));
-					} else {
-						console.log("message " + event.data);
-					}
-				}.bind(this);
-
-				// On socket close
-				ws.onclose = function(event) {
-					ws = null;
-					console.log("close");
-				}
-
-				// On socket error
-				ws.onerror = function(event) {
-					console.log("error");
-				};
-			}
+			// connectToWebSocket() {
+			// 	// Create and open the socket
+			// 	let ws = new WebSocket("ws://localhost:6437/v6.json");
+			//
+			// 	// On successful connection
+			// 	ws.onopen = function(event) {
+			// 		var enableMessage = JSON.stringify({enableGestures: true});
+			// 		ws.send(enableMessage); // Enable gestures
+			// 		var backgroundMessage = JSON.stringify({background: true});
+			// 		ws.send(backgroundMessage); // Get frames in background
+			// 		console.log("open");
+			// 	};
+			//
+			// 	// On message received
+			// 	ws.onmessage = function(event) {
+			// 		var obj = JSON.parse(event.data);
+			// 		var str = JSON.stringify(obj, undefined, 2);
+			// 		if(obj.id){
+			// 			this.updateHandPosition(obj);
+			// 			// console.log("Frame data for " + JSON.stringify(obj));
+			// 		} else {
+			// 			console.log("message " + event.data);
+			// 		}
+			// 	}.bind(this);
+			//
+			// 	// On socket close
+			// 	ws.onclose = function(event) {
+			// 		ws = null;
+			// 		console.log("close");
+			// 	}
+			//
+			// 	// On socket error
+			// 	ws.onerror = function(event) {
+			// 		console.log("error");
+			// 	};
+			// }
 
 			createHand() {
 				this.hands=[];
@@ -159,7 +166,7 @@
 					}
 				}
 
-				if(leap.pointables.length > 0) {
+				if(leap.pointables.length > 0 && this.hands.length > 0) {
 					for(let finger of leap.pointables) {
 						let handType = (finger.handId === leftHandId)?"left":"right";
 
@@ -173,6 +180,11 @@
 						// fingerModel.tipPosition.position.fromArray(finger.tipPosition);
 					}
 				}
+			}
+
+			removeHand() {
+				this.hands=[];
+				this.removeWebGLObject3D();
 			}
 		}
 
