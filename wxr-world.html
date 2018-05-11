@@ -184,7 +184,6 @@
 			traverseOnTargetAvailable(domElement) {
 				if(domElement.tagName.startsWith(WXR.PREFIX_WXR)) {
 					if(domElement.onTargetAvailable !== undefined) {
-						domElement.connectedCallback();
 						domElement.onTargetAvailable({});
 					}
 				}
