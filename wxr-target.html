@@ -18,7 +18,7 @@
 					targetObjects: {type: Array, value: []},
 					status: {type: String, value: WXREvent.AR_TARGET_MISSED},
 					src: {type: String},
-					disabled: {type:Boolean}
+					disabled: {type:Boolean, value: false}
 				};
 			}
 
@@ -36,22 +36,43 @@
 				this.height = 0;
 				this.depth = 0;
 
-				window.addEventListener('WebComponentsReady', function() {
-					if (this.parentElement.parentElement.arEngine === WXRTarget.VUFORIA && this.parentElement.enable && WXR.ContextManager.isMobile()) {
-						WXR.log(WXRTarget.is, "request target JSON Data");
+				if(this.disabled) {
+					this.style.display = "none";
+				}
 
-						$.ajax({
-							url: this.src + WXRTarget.VUFORIA_JSON_PATH,
-							success: (data) => {
-								this.feature = data;
-								WXR.SpaceManager.addTargets(this.feature);
-							},
-							error: (err) => {
-								WXR.log(WXRTarget.is, this.src + WXRTarget.VUFORIA_JSON_PATH + " not found")
-							}
-						});
-					}
+				let observer = new MutationObserver(function (mutations) {
+					mutations.forEach(mutationRecord => {
+						if(this.disabled) {
+							this.style.display = "none";
+						} else {
+							this.style.display = "block";
+						}
+					});
 				}.bind(this));
+
+				observer.observe(this, {attributes: true, attributeFilter: ['disabled']});
+
+				if($(WXRAR.is).length > 0) {
+					let arEngine = ($(WXRAR.is)[0].engine !== undefined)? $(WXRAR.is)[0].engine : WXRTarget.VUFORIA;
+
+					window.addEventListener('WebComponentsReady', function() {
+						if (arEngine === WXRTarget.VUFORIA && !this.parentElement.disabled && WXR.ContextManager.isMobile()) {
+							WXR.log(WXRTarget.is, "request target JSON Data");
+
+							$.ajax({
+								url: this.src + WXRTarget.VUFORIA_JSON_PATH,
+								success: (data) => {
+									WXR.log(data);
+									this.feature = data;
+									WXR.SpaceManager.addTargets(this.feature);
+								},
+								error: (err) => {
+									WXR.log(WXRTarget.is, this.src + WXRTarget.VUFORIA_JSON_PATH + " not found")
+								}
+							});
+						}
+					}.bind(this));
+				}
 
 				this.addEventListener(WXREvent.AR_TARGET_DETECTED, this.onDetected);
 				this.addEventListener(WXREvent.AR_TARGET_MOVED, this.onMoved);
@@ -66,44 +87,43 @@
 			}
 
 			onDetected(event) {
-				if(!this.disabled) {
-					WXR.log(WXRTarget.is, "detect");
-					this.status = WXREvent.AR_TARGET_DETECTED;
-					this.trackerType = event.detail.tracker;
-					this.width = event.detail.size.width;
-					this.height = event.detail.size.height;
-					this.depth = event.detail.size.depth;
+				WXR.log(WXRTarget.is, "detect");
 
-					let texture = undefined; //WXRTarget.TARGET_TRANSPARENT_TEXTURE;
-					let geometry;
+				this.status = WXREvent.AR_TARGET_DETECTED;
+				this.trackerType = event.detail.tracker;
+				this.width = event.detail.size.width;
+				this.height = event.detail.size.height;
+				this.depth = event.detail.size.depth;
 
-					switch (this.trackerType) {
-						case WXRTarget.IMAGE_TARGET:
-							geometry = new THREE.PlaneGeometry(this.width, this.height);
-							break;
+				let texture = undefined; //WXRTarget.TARGET_TRANSPARENT_TEXTURE;
+				let geometry;
 
-						case WXRTarget.MULTI_TARGET:
-							geometry = new THREE.BoxGeometry(this.width, this.height, this.depth);
-							break;
+				switch (this.trackerType) {
+					case WXRTarget.IMAGE_TARGET:
+						geometry = new THREE.PlaneGeometry(this.width, this.height);
+						break;
 
-						case WXRTarget.CYLINDER_TARGET:
-							geometry = new THREE.CylinderGeometry(this.width / 2, this.depth / 2, this.height, 48);
-							break;
+					case WXRTarget.MULTI_TARGET:
+						geometry = new THREE.BoxGeometry(this.width, this.height, this.depth);
+						break;
 
-						case WXRTarget.OBJECT_TARGET:
-							geometry = new THREE.BoxGeometry(this.width, this.height, this.depth);
-							break;
+					case WXRTarget.CYLINDER_TARGET:
+						geometry = new THREE.CylinderGeometry(this.width / 2, this.depth / 2, this.height, 48);
+						break;
 
-						case WXRTarget.UNKNOWN_TARGET:
-							break;
-					}
+					case WXRTarget.OBJECT_TARGET:
+						geometry = new THREE.BoxGeometry(this.width, this.height, this.depth);
+						break;
 
-					let material = new THREE.MeshBasicMaterial({map: new THREE.TextureLoader().load(texture)});
-					let transparentTarget = new THREE.Mesh(geometry, material);
-					this.webGLObject3D.add(transparentTarget);
-
-					WXREvent.dispatchEvent({type: WXREvent.TARGET_ABAILABLE, target: this});
+					case WXRTarget.UNKNOWN_TARGET:
+						break;
 				}
+
+				let material = new THREE.MeshBasicMaterial({map: new THREE.TextureLoader().load(texture)});
+				let transparentTarget = new THREE.Mesh(geometry, material);
+				this.webGLObject3D.add(transparentTarget);
+
+				WXREvent.dispatchEvent({type: WXREvent.TARGET_ABAILABLE, target: this});
 			}
 
 			onMoved(event) {
