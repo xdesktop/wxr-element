@@ -4,7 +4,7 @@
 	<script>
 		'use strict';
 
-		class WXRMode extends Polymer.Element {
+		class WXRRequirement extends Polymer.Element {
 			constructor() {
 				super();
 			}
@@ -15,8 +15,7 @@
 
 			static get properties() {
 				return {
-					default: {type: String, value: "3D"},
-					modes: {type: Array }
+					devices: {type: Array, value: [] }
 				};
 			}
 
@@ -25,7 +24,7 @@
 			}
 		}
 
-		customElements.define(WXRMode.is, WXRMode);
+		customElements.define(WXRRequirement.is, WXRRequirement);
 
 	</script>
 </dom-module>
