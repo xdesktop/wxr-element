@@ -39,8 +39,8 @@
 				}
 			}
 			onTargetAvailable(e) {
-				console.log('leap: onTargetAvailable', e);
-				this.createHand();
+				// console.log('leap: onTargetAvailable', e);
+				// this.createHand();
 				// if ((typeof(WebSocket) == 'undefined') &&
 				// 	(typeof(MozWebSocket) != 'undefined')) {
 				// 	WebSocket = MozWebSocket;
@@ -48,7 +48,7 @@
 			}
 
 			onLeapDetected(e) {
-				console.log('leap: onLeapDetected', e);
+				// console.log('leap: onLeapDetected', e);
 				this.createHand();
 				/*
 				* leapMotion Detected
@@ -58,8 +58,10 @@
 			}
 
 			onLeapMoved(e) {
-				console.log('leap: onLeapMoved', e);
+				// console.log('leap: onLeapMoved', e);
 				this.updateHandPosition(e.detail.frame);
+				this.collisionDetect();
+
 				/*
 				* leapMotion Moved
 				*
@@ -68,7 +70,7 @@
 			}
 
 			onLeapMissed(e) {
-				console.log('leap: onLeapMissed', e);
+				// console.log('leap: onLeapMissed', e);
 				this.removeHand();
 				/*
 				* leapMotion Missed
@@ -77,50 +79,14 @@
 				* */
 			}
 
-			// connectToWebSocket() {
-			// 	// Create and open the socket
-			// 	let ws = new WebSocket("ws://localhost:6437/v6.json");
-			//
-			// 	// On successful connection
-			// 	ws.onopen = function(event) {
-			// 		var enableMessage = JSON.stringify({enableGestures: true});
-			// 		ws.send(enableMessage); // Enable gestures
-			// 		var backgroundMessage = JSON.stringify({background: true});
-			// 		ws.send(backgroundMessage); // Get frames in background
-			// 		console.log("open");
-			// 	};
-			//
-			// 	// On message received
-			// 	ws.onmessage = function(event) {
-			// 		var obj = JSON.parse(event.data);
-			// 		var str = JSON.stringify(obj, undefined, 2);
-			// 		if(obj.id){
-			// 			this.updateHandPosition(obj);
-			// 			// console.log("Frame data for " + JSON.stringify(obj));
-			// 		} else {
-			// 			console.log("message " + event.data);
-			// 		}
-			// 	}.bind(this);
-			//
-			// 	// On socket close
-			// 	ws.onclose = function(event) {
-			// 		ws = null;
-			// 		console.log("close");
-			// 	}
-			//
-			// 	// On socket error
-			// 	ws.onerror = function(event) {
-			// 		console.log("error");
-			// 	};
-			// }
-
 			createHand() {
 				this.hands=[];
 				let group = new THREE.Group();
 
-				let jointGeometry = new THREE.SphereGeometry(10, 10, 10);
+				let jointGeometry = new THREE.SphereGeometry(0.015, 32, 32);
 				// let jointMaterial = new THREE.MeshLambertMaterial({color: 0xff0000});
 
+				// bone order: R, B, Y, A, G
 				let btip = new THREE.MeshBasicMaterial({color: 0xff0000});
 				let carp = new THREE.MeshBasicMaterial({color: 0x00ff00});
 				let dip = new THREE.MeshBasicMaterial({color: 0x0000ff});
@@ -166,17 +132,17 @@
 					}
 				}
 
-				if(leap.pointables.length > 0 && this.hands.length > 0) {
+				if(leap.pointables.length > 0 && this.hands.left || this.hands.right) {
 					for(let finger of leap.pointables) {
 						let handType = (finger.handId === leftHandId)?"left":"right";
 
 						let fingerModel = this.hands[handType][finger.type];
 
-						fingerModel.btipPosition.position.fromArray(finger.btipPosition);
-						fingerModel.carpPosition.position.fromArray(finger.carpPosition);
-						fingerModel.dipPosition.position.fromArray(finger.dipPosition);
-						fingerModel.mcpPosition.position.fromArray(finger.mcpPosition);
-						fingerModel.pipPosition.position.fromArray(finger.pipPosition);
+						fingerModel.btipPosition.position.fromArray(finger.btipPosition.map( e => e/1000 ));
+						fingerModel.carpPosition.position.fromArray(finger.carpPosition.map( e => e/1000 ));
+						fingerModel.dipPosition.position.fromArray(finger.dipPosition.map( e => e/1000 ));
+						fingerModel.mcpPosition.position.fromArray(finger.mcpPosition.map( e => e/1000 ));
+						fingerModel.pipPosition.position.fromArray(finger.pipPosition.map( e => e/1000 ));
 						// fingerModel.tipPosition.position.fromArray(finger.tipPosition);
 					}
 				}
@@ -186,6 +152,78 @@
 				this.hands=[];
 				this.removeWebGLObject3D();
 			}
+
+			collisionDetect() {
+
+				const leftCollided = [];
+				const rightCollided = [];
+				const meshes = $(WXRWorld.is)[0].renderer.getTargetWebGLObjects();
+
+				// finger.type: 0 -> thumb, 1 -> index, ...
+				const leftThumbFinger = this.hands['left'][0]['btipPosition'];
+				const rightThumbFinger = this.hands['right'][0]['btipPosition'];
+
+				// const targets = $(WXRWorld.is)[0].renderer.getWebGLScene().children;
+				const targets = Array.from($(WXRBox.is)).map( e => e.webGLObject3D);
+
+				// var raycaster = new THREE.Raycaster(leftThumbFinger.position.clone());
+				// var intersects = raycaster.intersectObjects( targets, true );
+				// intersects.forEach( target => {
+				// 	if (target.distance < leftThumbFinger.radius) {
+				// 		leftCollided.push(target);
+				// 	}
+				// });
+
+				// var raycaster = new THREE.Raycaster(rightThumbFinger.position.clone(), target[0].position.clone().sub(rightThumbFinger.position.clone()), 0, rightThumbFinger.geometry.boundingSphere.radius );
+				// // console.log(raycaster, rightThumbFinger, rightThumbFinger.geometry.boundingSphere.radius);
+				// console.log(raycaster.ray.origin, targets[0].position);
+				// var intersects = raycaster.intersectObject( targets, true );
+				// console.log(intersects);
+				// intersects.forEach( target => {
+				// 	if (target.distance < rightThumbFinger.geometry.boundingSphere.radius) {
+				// 		rightCollided.push(target);
+				// 	}
+				// });
+
+				// var raycaster = new THREE.Raycaster(rightThumbFinger.position.clone());
+				// var intersects = raycaster.intersectObjects( targets, true );
+				// intersects.forEach( target => {
+				// 	if (target.distance < rightThumbFinger.radius) {
+				// 		rightCollided.push(target);
+				// 	}
+				// });
+
+				// var object = leftThumbFinger;
+				// var originPoint = object.position.clone();
+				// meshes.forEach( target => {
+				//     var directionVector = target.position.clone().sub(originPoint);
+				//
+				// 	var ray = new THREE.Raycaster(originPoint, directionVector.clone().normalize());
+				// 	var collisionResults = ray.intersectObject(target);
+				// 	if (collisionResults.length > 0 && collisionResults[0].distance < object.radius) {
+				// 		leftCollided.push(collisionResults[0]);
+				// 	}
+				// });
+
+
+				// var object = rightThumbFinger;
+				// var originPoint = object.position.clone();
+				// for (var vertexIndex = 0; vertexIndex < object.geometry.vertices.length; vertexIndex++) {
+				// 	var localVertex = object.geometry.vertices[vertexIndex].clone();
+				// 	var globalVertex = localVertex.applyMatrix4(object.matrix);
+				// 	var directionVector = globalVertex.sub(object.position);
+				//
+				// 	var ray = new THREE.Raycaster(originPoint, directionVector.clone().normalize());
+				// 	var collisionResults = ray.intersectObjects(meshes);
+				// 	if (collisionResults.length > 0 && collisionResults[0].distance < directionVector.length()) {
+				// 		rightCollided.push(collisionResults[0]);
+				// 	}
+				// }
+
+
+				// console.log(leftCollided, rightCollided);
+			}
+
 		}
 
 		customElements.define(WXRHandLeapmotion.is, WXRHandLeapmotion);
