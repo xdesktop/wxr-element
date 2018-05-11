@@ -189,6 +189,11 @@
 				}
 
 				if (domElement.children.length > 0) {
+					if(domElement.tagName.toLowerCase() === WXRTarget.is) {
+						if(domElement.disabled) {
+							return;
+						}
+					}
 					for (let childDom of domElement.children) {
 						this.traverseOnTargetAvailable(childDom);
 					}
