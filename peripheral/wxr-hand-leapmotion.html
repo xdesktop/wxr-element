@@ -16,6 +16,7 @@
 			constructor() {
 				super();
 				this.hands = [];
+				this.deltaRightThumbVector = new THREE.Vector3();
 			}
 
 			static get is() {
@@ -140,6 +141,8 @@
 
 						let fingerModel = this.hands[handType][finger.type];
 
+						if (handType === 'right') this.deltaRightThumbVector.fromArray(finger.btipPosition.map( e => e/1000 )).sub(fingerModel.btipPosition.position);
+
 						fingerModel.btipPosition.position.fromArray(finger.btipPosition.map( e => e/1000 ));
 						fingerModel.carpPosition.position.fromArray(finger.carpPosition.map( e => e/1000 ));
 						fingerModel.dipPosition.position.fromArray(finger.dipPosition.map( e => e/1000 ));
@@ -165,18 +168,10 @@
 				// finger.type: 0 -> thumb, 1 -> index, ...
 				const leftThumbFinger = this.hands['left'][0]['btipPosition'];
 				const rightThumbFinger = this.hands['right'][0]['btipPosition'];
-				const rightIndexFinger = this.hands['right'][0]['carpPosition'];
+				const rightIndexFinger = this.hands['right'][1]['btipPosition'];
 
 				// const targets = $(WXRWorld.is)[0].renderer.getWebGLScene().children;
 				const targets = Array.from($(WXRBox.is)).map( e => e.webGLObject3D);
-
-				// var raycaster = new THREE.Raycaster(leftThumbFinger.position.clone());
-				// var intersects = raycaster.intersectObjects( targets, true );
-				// intersects.forEach( target => {
-				// 	if (target.distance < leftThumbFinger.radius) {
-				// 		leftCollided.push(target);
-				// 	}
-				// });
 
 				var raycaster = new THREE.Raycaster(rightThumbFinger.position.clone(), targets[0].position.clone().sub(rightThumbFinger.position.clone()), 0, rightThumbFinger.geometry.boundingSphere.radius );
 				var intersects = raycaster.intersectObject( targets[0] );
@@ -194,11 +189,8 @@
 					}
 				});
 
-				if (rightThunbCollided[0] || rightIndexCollided[0]) {
-					console.log(rightThunbCollided.object, rightIndexCollided.object);
-				}
 				if (rightThunbCollided[0] && rightIndexCollided[0] && rightThunbCollided[0].object.uuid === rightIndexCollided[0].object.uuid) {
-					console.log('grib!!');
+					rightThunbCollided[0].object.position.multiplyScalar(1).add(this.deltaRightThumbVector);
 				}
 
 				// var raycaster = new THREE.Raycaster(rightThumbFinger.position.clone());
@@ -236,8 +228,6 @@
 				// 	}
 				// }
 
-
-				// console.log(leftCollided, rightCollided);
 			}
 
 		}
