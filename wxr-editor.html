@@ -109,7 +109,7 @@
 				height: 5.5vw;
 			}
 
-			#WXRWorkspaceManagement, #WXRUserProfile {
+			#WXRWorkspaceManagement {
 				width: 70vw;
 			}
 
@@ -138,20 +138,6 @@
 			</div>
 		</paper-menu-button>
 		<span slot="top" class="title" id="WXREditorCenterText" >Title</span>
-
-		<paper-menu-button id="userButton" horizontal-align="right"
-						   vertical-align="top"
-						   vertical-offset="50">
-			<paper-button slot="dropdown-trigger" id="userIcon" raised>
-				<span>User</span>
-			</paper-button>
-			<div slot="dropdown-content" id="WXRUserDrop">
-				<paper-item on-click="openUserProfile" id="profile">Profile</paper-item>
-				<paper-item on-click="showMyDevices" id="device">Devices</paper-item>
-				<paper-item on-click="showMyWorkspaces" id="myWorkspace">My WorkSpace</paper-item>
-				<paper-item on-click="logout" id="logout">Logout</paper-item>
-			</div>
-		</paper-menu-button>
 
 		<paper-menu-button id="modeButton" horizontal-align="right"
 						   vertical-align="top"
