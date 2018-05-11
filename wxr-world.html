@@ -80,10 +80,10 @@
 
 					WXREvent.dispatchEvent({type: WXREvent.ON_MOUSE_DOWN, target: dom, part: name, params: params});
 				} else {
-					intersects = raycaster.intersectObjects(this.transformControls.children);
+					let transformArrows = raycaster.intersectObjects(this.transformControls.children);
 
-					if(intersects.length > 0) {
-						console.log(intersects);
+					if(transformArrows.length > 0) {
+
 						return;
 					} else {
 						this.transformControls.detach();
