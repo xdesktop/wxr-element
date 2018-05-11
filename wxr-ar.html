@@ -1,0 +1,30 @@
+<link rel="import" href="./polymerImport.html">
+
+<dom-module id="wxr-ui">
+	<script>
+		'use strict';
+
+		class WXRAR extends Polymer.Element {
+			constructor() {
+				super();
+			}
+
+			static get is() {
+				return "wxr-ar";
+			}
+
+			static get properties() {
+				return {
+					engine: {type: String, value: "vuforia" }
+				};
+			}
+
+			connectedCallback() {
+				super.connectedCallback();
+			}
+		}
+
+		customElements.define(WXRAR.is, WXRAR);
+
+	</script>
+</dom-module>

@@ -1,0 +1,32 @@
+<link rel="import" href="./polymerImport.html">
+
+<dom-module id="wxr-ui">
+	<script>
+		'use strict';
+
+		class WXRDescription extends Polymer.Element {
+			constructor() {
+				super();
+			}
+
+			static get is() {
+				return "wxr-description";
+			}
+
+			static get properties() {
+				return {
+					title: { type: String },
+					img: { type: String },
+					desc: { type: String }
+				};
+			}
+
+			connectedCallback() {
+				super.connectedCallback();
+			}
+		}
+
+		customElements.define(WXRDescription.is, WXRDescription);
+
+	</script>
+</dom-module>
