@@ -71,7 +71,13 @@
 						object = object.parent;
 					}
 
-					this.transformControls.attach(object);
+					if($('[me]').length > 0 ) {
+						if($('[me]')[0].authority === WXRUser.AUTHORITY_EDITOR || $('[me]')[0].authority === WXRUser.AUTHORITY_OWNER) {
+							this.transformControls.attach(object);
+						} else if($('[me]')[0].authority === WXRUser.AUTHORITY_VIEWER) {
+							WXR.log(WXRWorld.is, "you not have authority");
+						}
+					}
 
 					if(dom === undefined) {
 						WXR.log(WXRWorld.is, "Can not found DOM that have mesh's webgl_uuid.");
