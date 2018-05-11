@@ -278,58 +278,15 @@
 				</table>
 
 				<h2>User List</h2>
-				<table width="100%" height="60px" style="text-align:center;">
+				<table id="WXRUserTable" width="100%" height="60px" style="text-align:center;">
 					<tr>
 						<td>아이디</td>
-						<td>이름</td>
 						<td>권한</td>
 					</tr>
-					<tr>
-						<td>user 1</td>
-						<td>이용재</td>
-						<td>
-							<paper-dropdown-menu label="Owner">
-								<paper-listbox slot="dropdown-content" class="dropdown-content">
-									<paper-item>Owner</paper-item>
-									<paper-item>Editor</paper-item>
-									<paper-item>Viewer</paper-item>
-								</paper-listbox>
-							</paper-dropdown-menu>
-						</td>
-					</tr>
-					<tr>
-						<td>user 2</td>
-						<td>이종호</td>
-						<td>
-							<paper-dropdown-menu label="Editor">
-								<paper-listbox slot="dropdown-content" class="dropdown-content">
-									<paper-item>Owner</paper-item>
-									<paper-item>Editor</paper-item>
-									<paper-item>Viewer</paper-item>
-								</paper-listbox>
-							</paper-dropdown-menu>
-						</td>
-					</tr>
-					<tr>
-						<td>user 3</td>
-						<td>임완호</td>
-						<td>
-							<paper-dropdown-menu label="Viewer">
-								<paper-listbox slot="dropdown-content" class="dropdown-content">
-									<paper-item>Owner</paper-item>
-									<paper-item>Editor</paper-item>
-									<paper-item>Viewer</paper-item>
-								</paper-listbox>
-							</paper-dropdown-menu>
-						</td>
-					</tr>
 				</table>
-
-				<paper-input id="WXRWorkspaceManagementURI" label="URI" type="text input" placeholder="Workspace name"></paper-input>
-
 			</paper-dialog-scrollable>
 			<div class="buttons">
-				<paper-button dialog-confirm autofocus on-click="putWorkspaceManagement">확인</paper-button>
+				<paper-button dialog-confirm autofocus on-click="submitWorkspaceManagement">확인</paper-button>
 			</div>
 		</paper-dialog>
 
