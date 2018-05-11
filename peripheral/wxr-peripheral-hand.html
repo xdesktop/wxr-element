@@ -1,0 +1,30 @@
+<link rel="import" href="../polymerImport.html">
+
+<dom-module id="wxr-peripheral-hand">
+	<script>
+		'use strict';
+
+		class WXRPeriphaeralHand extends WXRPeriphaeral {
+			constructor() {
+				super();
+			}
+
+			static get is() {
+				return "wxr-peripheral-hand";
+			}
+
+			static get properties() {
+				return {
+
+				};
+			}
+
+			connectedCallback() {
+				super.connectedCallback();
+			}
+		}
+
+		customElements.define(WXRPeriphaeralHand.is, WXRPeriphaeralHand);
+
+	</script>
+</dom-module>

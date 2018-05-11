@@ -1,0 +1,30 @@
+<link rel="import" href="../polymerImport.html">
+
+<dom-module id="wxr-tracker-vivetracker">
+	<script>
+		'use strict';
+
+		class WXRTrackerViveTracker extends WXRPeriphaeralTracker {
+			constructor() {
+				super();
+			}
+
+			static get is() {
+				return "wxr-tracker-vivetracker";
+			}
+
+			static get properties() {
+				return {
+
+				};
+			}
+
+			connectedCallback() {
+				super.connectedCallback();
+			}
+		}
+
+		customElements.define(WXRTrackerViveTracker.is, WXRTrackerViveTracker);
+
+	</script>
+</dom-module>

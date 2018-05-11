@@ -1,0 +1,30 @@
+<link rel="import" href="../polymerImport.html">
+
+<dom-module id="wxr-ar-vuforia">
+	<script>
+		'use strict';
+
+		class WXRARVuforia extends WXRPeriphaeralAR {
+			constructor() {
+				super();
+			}
+
+			static get is() {
+				return "wxr-ar-vuforia";
+			}
+
+			static get properties() {
+				return {
+
+				};
+			}
+
+			connectedCallback() {
+				super.connectedCallback();
+			}
+		}
+
+		customElements.define(WXRARVuforia.is, WXRARVuforia);
+
+	</script>
+</dom-module>

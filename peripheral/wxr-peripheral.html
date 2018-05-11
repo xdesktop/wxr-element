@@ -1,0 +1,30 @@
+<link rel="import" href="../polymerImport.html">
+
+<dom-module id="wxr-peripheral">
+	<script>
+		'use strict';
+
+		class WXRPeriphaeral extends WXRElement {
+			constructor() {
+				super();
+			}
+
+			static get is() {
+				return "wxr-peripheral";
+			}
+
+			static get properties() {
+				return {
+
+				};
+			}
+
+			connectedCallback() {
+				super.connectedCallback();
+			}
+		}
+
+		customElements.define(WXRPeriphaeral.is, WXRPeriphaeral);
+
+	</script>
+</dom-module>

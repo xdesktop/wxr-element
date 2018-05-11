@@ -1,0 +1,30 @@
+<link rel="import" href="../polymerImport.html">
+
+<dom-module id="wxr-tracker-realsense">
+	<script>
+		'use strict';
+
+		class WXRTrackerRealsense extends WXRPeriphaeralTracker {
+			constructor() {
+				super();
+			}
+
+			static get is() {
+				return "wxr-tracker-realsense";
+			}
+
+			static get properties() {
+				return {
+
+				};
+			}
+
+			connectedCallback() {
+				super.connectedCallback();
+			}
+		}
+
+		customElements.define(WXRTrackerRealsense.is, WXRTrackerRealsense);
+
+	</script>
+</dom-module>

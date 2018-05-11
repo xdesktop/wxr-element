@@ -1,0 +1,30 @@
+<link rel="import" href="../polymerImport.html">
+
+<dom-module id="wxr-peripheral-hmd">
+	<script>
+		'use strict';
+
+		class WXRPeriphaeralHMD extends WXRPeriphaeral {
+			constructor() {
+				super();
+			}
+
+			static get is() {
+				return "wxr-peripheral-hmd";
+			}
+
+			static get properties() {
+				return {
+
+				};
+			}
+
+			connectedCallback() {
+				super.connectedCallback();
+			}
+		}
+
+		customElements.define(WXRPeriphaeralHMD.is, WXRPeriphaeralHMD);
+
+	</script>
+</dom-module>

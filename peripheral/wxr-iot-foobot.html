@@ -1,0 +1,30 @@
+<link rel="import" href="../polymerImport.html">
+
+<dom-module id="wxr-iot-foobot">
+	<script>
+		'use strict';
+
+		class WXRIoTFoobot extends WXRPeriphaeralIoT {
+			constructor() {
+				super();
+			}
+
+			static get is() {
+				return "wxr-iot-foobot";
+			}
+
+			static get properties() {
+				return {
+
+				};
+			}
+
+			connectedCallback() {
+				super.connectedCallback();
+			}
+		}
+
+		customElements.define(WXRIoTFoobot.is, WXRIoTFoobot);
+
+	</script>
+</dom-module>

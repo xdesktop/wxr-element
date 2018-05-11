@@ -1,0 +1,30 @@
+<link rel="import" href="../polymerImport.html">
+
+<dom-module id="wxr-peripheral-tracker">
+	<script>
+		'use strict';
+
+		class WXRPeriphaeralTracker extends WXRPeriphaeral {
+			constructor() {
+				super();
+			}
+
+			static get is() {
+				return "wxr-peripheral-tracker";
+			}
+
+			static get properties() {
+				return {
+
+				};
+			}
+
+			connectedCallback() {
+				super.connectedCallback();
+			}
+		}
+
+		customElements.define(WXRPeriphaeralTracker.is, WXRPeriphaeralTracker);
+
+	</script>
+</dom-module>

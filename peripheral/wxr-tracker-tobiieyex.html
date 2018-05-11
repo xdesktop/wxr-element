@@ -1,0 +1,30 @@
+<link rel="import" href="../polymerImport.html">
+
+<dom-module id="wxr-tracker-tobiieyex">
+	<script>
+		'use strict';
+
+		class WXRTrackerTobiiEyeX extends WXRPeriphaeralTracker {
+			constructor() {
+				super();
+			}
+
+			static get is() {
+				return "wxr-tracker-tobiieyex";
+			}
+
+			static get properties() {
+				return {
+
+				};
+			}
+
+			connectedCallback() {
+				super.connectedCallback();
+			}
+		}
+
+		customElements.define(WXRTrackerTobiiEyeX.is, WXRTrackerTobiiEyeX);
+
+	</script>
+</dom-module>

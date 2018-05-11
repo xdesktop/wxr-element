@@ -1,9 +1,9 @@
-<link rel="import" href="./polymerImport.html">
+<link rel="import" href="../polymerImport.html">
 
-<dom-module id="wxr-box">
+<dom-module id="wxr-hand-leapmotion">
 	<template>
 		<style>
-			wxr-box {
+			wxr-hand-leapmotion {
 				--wxr-transform: var(--wxr-transform);
 			}
 		</style>
@@ -12,14 +12,14 @@
 	<script>
 		'use strict';
 
-		class WXRLeap extends WXRElement {
+		class WXRHandLeapmotion extends WXRPeriphaeralHand {
 			constructor() {
 				super();
 				this.hands = [];
 			}
 
 			static get is() {
-				return "wxr-leap";
+				return "wxr-hand-leapmotion";
 			}
 
 			static get properties() {
@@ -188,7 +188,7 @@
 			}
 		}
 
-		customElements.define(WXRLeap.is, WXRLeap);
+		customElements.define(WXRHandLeapmotion.is, WXRHandLeapmotion);
 
 	</script>
 </dom-module>

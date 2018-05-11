@@ -1,0 +1,30 @@
+<link rel="import" href="../polymerImport.html">
+
+<dom-module id="wxr-hmd-vive">
+	<script>
+		'use strict';
+
+		class WXRHMDVive extends WXRPeriphaeralHMD {
+			constructor() {
+				super();
+			}
+
+			static get is() {
+				return "wxr-hmd-vive";
+			}
+
+			static get properties() {
+				return {
+
+				};
+			}
+
+			connectedCallback() {
+				super.connectedCallback();
+			}
+		}
+
+		customElements.define(WXRHMDVive.is, WXRHMDVive);
+
+	</script>
+</dom-module>

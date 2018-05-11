@@ -1,0 +1,30 @@
+<link rel="import" href="../polymerImport.html">
+
+<dom-module id="wxr-hmd-mixedreality">
+	<script>
+		'use strict';
+
+		class WXRHMDMixedReality extends WXRPeriphaeralHMD {
+			constructor() {
+				super();
+			}
+
+			static get is() {
+				return "wxr-hmd-mixedreality";
+			}
+
+			static get properties() {
+				return {
+
+				};
+			}
+
+			connectedCallback() {
+				super.connectedCallback();
+			}
+		}
+
+		customElements.define(WXRHMDMixedReality.is, WXRHMDMixedReality);
+
+	</script>
+</dom-module>

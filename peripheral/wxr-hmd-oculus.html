@@ -1,0 +1,30 @@
+<link rel="import" href="../polymerImport.html">
+
+<dom-module id="wxr-hmd-oculus">
+	<script>
+		'use strict';
+
+		class WXRHMDOculus extends WXRPeriphaeralHMD {
+			constructor() {
+				super();
+			}
+
+			static get is() {
+				return "wxr-hmd-oculus";
+			}
+
+			static get properties() {
+				return {
+
+				};
+			}
+
+			connectedCallback() {
+				super.connectedCallback();
+			}
+		}
+
+		customElements.define(WXRHMDOculus.is, WXRHMDOculus);
+
+	</script>
+</dom-module>

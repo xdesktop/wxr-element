@@ -1,0 +1,30 @@
+<link rel="import" href="../polymerImport.html">
+
+<dom-module id="wxr-hand-oculustouch">
+	<script>
+		'use strict';
+
+		class WXRHandOculusTouch extends WXRPeriphaeralHand {
+			constructor() {
+				super();
+			}
+
+			static get is() {
+				return "wxr-hand-oculustouch";
+			}
+
+			static get properties() {
+				return {
+
+				};
+			}
+
+			connectedCallback() {
+				super.connectedCallback();
+			}
+		}
+
+		customElements.define(WXRHandOculusTouch.is, WXRHandOculusTouch);
+
+	</script>
+</dom-module>
