@@ -24,8 +24,7 @@
 			static get properties() {
 				return {
 					src: {type: String},
-					enable: Boolean,
-					disabled: Boolean
+					disabled: {type: Boolean, value:false }
 				};
 			}
 
@@ -38,21 +37,37 @@
 				this.addWebGLObject3D(webGLAugmentation);
 				this.addCSS3DObject3D(css3DAugmentation);
 
+				let observer = new MutationObserver(function (mutations) {
+					mutations.forEach(mutationRecord => {
+						if(this.disabled) {
+							this.onCheckout();
+						} else {
+							this.onCheckIn();
+						}
+					});
+				}.bind(this));
+
+				observer.observe(this, {attributes: true, attributeFilter: ['disabled']});
+
 				this.addEventListener(WXREvent.SPACE_CHECKOUT, this.onCheckout);
 				this.addEventListener(WXREvent.SPACE_CHECKIN, this.onCheckIn);
 			}
 
 			onCheckIn(event) {
-				this.removeAttribute("disabled");
-				this.setAttribute("enable", "");
+				if(this.disabled) {
+					this.removeAttribute("disabled");
+				}
+
 				this.parentElement.loadSpace(this);
 
 				WXR.log(WXRSpace.is, "enter " + this.src);
 			}
 
 			onCheckout(event) {
-				this.removeAttribute("enable");
-				this.setAttribute("disabled", "");
+				if(!this.disabled) {
+					this.setAttribute("disabled", "");
+				}
+
 				this.parentElement.unloadSpace(this);
 
 				WXR.log(WXRSpace.is, "exit " + this.src);
