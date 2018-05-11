@@ -119,6 +119,8 @@
 				}
 
 				this.addWebGLObject3D(group);
+
+				this.webGLObject3D.rotation.set(-1.57, 0, 0);
 			}
 
 			updateHandPosition(leap) {
@@ -156,12 +158,14 @@
 			collisionDetect() {
 
 				const leftCollided = [];
-				const rightCollided = [];
+				const rightThunbCollided = [];
+				const rightIndexCollided = [];
 				const meshes = $(WXRWorld.is)[0].renderer.getTargetWebGLObjects();
 
 				// finger.type: 0 -> thumb, 1 -> index, ...
 				const leftThumbFinger = this.hands['left'][0]['btipPosition'];
 				const rightThumbFinger = this.hands['right'][0]['btipPosition'];
+				const rightIndexFinger = this.hands['right'][0]['carpPosition'];
 
 				// const targets = $(WXRWorld.is)[0].renderer.getWebGLScene().children;
 				const targets = Array.from($(WXRBox.is)).map( e => e.webGLObject3D);
@@ -174,16 +178,28 @@
 				// 	}
 				// });
 
-				// var raycaster = new THREE.Raycaster(rightThumbFinger.position.clone(), target[0].position.clone().sub(rightThumbFinger.position.clone()), 0, rightThumbFinger.geometry.boundingSphere.radius );
-				// // console.log(raycaster, rightThumbFinger, rightThumbFinger.geometry.boundingSphere.radius);
-				// console.log(raycaster.ray.origin, targets[0].position);
-				// var intersects = raycaster.intersectObject( targets, true );
-				// console.log(intersects);
-				// intersects.forEach( target => {
-				// 	if (target.distance < rightThumbFinger.geometry.boundingSphere.radius) {
-				// 		rightCollided.push(target);
-				// 	}
-				// });
+				var raycaster = new THREE.Raycaster(rightThumbFinger.position.clone(), targets[0].position.clone().sub(rightThumbFinger.position.clone()), 0, rightThumbFinger.geometry.boundingSphere.radius );
+				var intersects = raycaster.intersectObject( targets[0] );
+				intersects.forEach( target => {
+					if (target.distance < rightThumbFinger.geometry.boundingSphere.radius) {
+						rightThunbCollided.push(target);
+					}
+				});
+
+				var raycaster = new THREE.Raycaster(rightIndexFinger.position.clone(), targets[0].position.clone().sub(rightIndexFinger.position.clone()), 0, rightIndexFinger.geometry.boundingSphere.radius );
+				var intersects = raycaster.intersectObject( targets[0] );
+				intersects.forEach( target => {
+					if (target.distance < rightIndexFinger.geometry.boundingSphere.radius) {
+						rightIndexCollided.push(target);
+					}
+				});
+
+				if (rightThunbCollided[0] || rightIndexCollided[0]) {
+					console.log(rightThunbCollided.object, rightIndexCollided.object);
+				}
+				if (rightThunbCollided[0] && rightIndexCollided[0] && rightThunbCollided[0].object.uuid === rightIndexCollided[0].object.uuid) {
+					console.log('grib!!');
+				}
 
 				// var raycaster = new THREE.Raycaster(rightThumbFinger.position.clone());
 				// var intersects = raycaster.intersectObjects( targets, true );
