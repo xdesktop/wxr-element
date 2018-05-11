@@ -296,7 +296,7 @@
 			<super-code id="codePen" theme=".cm-s-monokai" value="-"></super-code>
 
 			<div class="buttons">
-				<paper-button dialog-confirm autofocus >확인</paper-button>
+				<paper-button dialog-confirm autofocus on-click="submitCodePen">확인</paper-button>
 			</div>
 		</paper-dialog>
 	</template>
@@ -566,12 +566,16 @@
 				this.$.WXRCodepen.open();
 				this.$.menuButton.close();
 
-				this.setCodePen($(WXRWorld.is)[0].outerHTML);
+				this.setCodePen(document.body.innerHTML);
 			}
 
 			setCodePen(source) {
 				this.$.codePen.editor.setValue(source);
 				setTimeout(this.$.codePen.editor.refresh(), 1);
+			}
+
+			submitCodePen() {
+				document.body.innerHTML = this.$.codePen.value;
 			}
 
 			exportHTML() {
