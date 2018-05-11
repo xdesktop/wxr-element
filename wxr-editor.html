@@ -370,38 +370,104 @@
 			}
 
 			initWorkspaceManagement() {
-				let worldDomElement = $(WXRWorld.is)[0];
-				this.$.WXRWorkspaceManagementTitle.value = worldDomElement.title;
-				this.$.WXRWorkspaceManagementTumbnail.value = worldDomElement.img;
-				this.$.WXRWorkspaceManagementDescription.value = worldDomElement.description;
+				if( $(WXRDescription.is).length > 0 ) {
+					let description = $(WXRDescription.is)[0];
+					this.$.WXRWorkspaceManagementTitle.value = description.title;
+					this.$.WXRWorkspaceManagementTumbnail.value = description.img;
+					this.$.WXRWorkspaceManagementDescription.value = description.desc;
 
+					this.$.WXREditorCenterText.innerText = description.title;
+				}
 
 				/* device requirement */
-				let devices = $('wxr-devices').getAttribute('required').split(", ");
+				if( $(WXRRequirement.is).length > 0 ) {
+					let devices = $(WXRRequirement.is)[0].devices;
 
-				for(let device of devices) {
-					switch(device) {
-						case "vive-controller":
-							this.$.viveRadioButton.checked = true;
-							break;
-						case "oculus-touch":
-							this.$.oculusRadioButton.checked = true;
-							break;
-						case "windows-spatial":
-							this.$.windowsRadioButton.checked = true;
-							break;
-						case "leap-motion":
-							this.$.leapRadioButton.checked = true;
-							break;
+					for(let device of devices) {
+						switch(device) {
+							case "vive-controller":
+								this.$.viveRadioButton.checked = true;
+								break;
+							case "oculus-touch":
+								this.$.oculusRadioButton.checked = true;
+								break;
+							case "windows-spatial":
+								this.$.windowsRadioButton.checked = true;
+								break;
+							case "leap-motion":
+								this.$.leapRadioButton.checked = true;
+								break;
+						}
 					}
 				}
 
-				/* User List */
-				for(let user of $('wxr-users')[0].children) {
+				if( $(WXRUser.is).length > 0 ) {
+					for( let user of $(WXRUser.is)) {
+						this.createRow(user.userId, user.authority);
+					}
+				}
+			}
 
+			createRow(userId, authority) {
+				let table = this.$.WXRUserTable;
+				let tr = document.createElement('tr');
+				let idCol = document.createElement('td');
+				let authSelectorCol = document.createElement('td');
+				let paperDropdown = document.createElement('paper-dropdown-menu');
+				let paperListBox = document.createElement('paper-listbox');
+				let paperItemOwner = document.createElement('paper-item');
+				let paperItemEditor = document.createElement('paper-item');
+				let paperItemViewer = document.createElement('paper-item');
+				let selected;
+
+				idCol.innerText = userId;
+				idCol.setAttribute('class', 'userId');
+
+				switch(authority) {
+					case WXRUser.AUTHORITY_OWNER:
+						selected = 0;
+						break;
+					case WXRUser.AUTHORITY_EDITOR:
+						selected = 1;
+						break;
+					case WXRUser.AUTHORITY_VIEWER:
+						selected = 2;
+						break;
 				}
 
+				paperListBox.setAttribute('selected', selected);
+				paperListBox.setAttribute('slot', 'dropdown-content');
+				paperListBox.setAttribute('class', 'dropdown-content');
 
+				paperItemOwner.innerText = WXRUser.AUTHORITY_OWNER;
+				paperItemEditor.innerText = WXRUser.AUTHORITY_EDITOR;
+				paperItemViewer.innerText = WXRUser.AUTHORITY_VIEWER;
+
+				paperListBox.appendChild(paperItemOwner);
+				paperListBox.appendChild(paperItemEditor);
+				paperListBox.appendChild(paperItemViewer);
+
+				paperDropdown.appendChild(paperListBox);
+
+				authSelectorCol.appendChild(paperDropdown);
+
+				tr.appendChild(idCol);
+				tr.appendChild(authSelectorCol);
+
+				table.appendChild(tr);
+			}
+
+			initModeMenu() {
+				let modes;
+				if( $(WXRView.is).length > 0 ) {
+					modes = $(WXRView.is)[0].modes;
+				}
+
+				// modes = (modes === undefined) ? ["3D", "AR", "VR"] : modes;
+
+				for(let mode of modes) {
+					this.$[mode].style.display = "block";
+				}
 			}
 
 			setInformation(dom) {
@@ -426,22 +492,58 @@
 				}
 			}
 
-			putWorkspaceManagement(){
-				// let formData = new FormData();
-				// formData.append('name', WXRWorkspaceManagementTitle.value)
-				// formData.append('description', this.$.WXRWorkspaceManagementContext.value)
-				// formData.append('thumbnail', this.$.WXRWorkspaceManagementThumbnail.value);
-				//
-				// $.ajax({
-				// 	type: "put",
-				//    url: "https://localhost/workspaces/" + this.workspaceId,
-				// 	data : formData,
-				// 	processType: false,
-				// 	contentType: false,
-				// 	success: (data, textStatus, jqXHR) => {
-				// 	    WXR.log("WXREditor", "put success");
-				//    }
-				// });
+			submitWorkspaceManagement(){
+				let description, requirement, devices = [];
+
+				if( $(WXRDescription.is).length <= 0 ) {
+					description = document.createElement(WXRDescription.is);
+					$(WXRWorld.is)[0].appendChild(description);
+				} else {
+					description = $(WXRDescription.is)[0];
+				}
+
+				description.setAttribute('title', this.$.WXRWorkspaceManagementTitle.value);
+				description.setAttribute('desc', this.$.WXRWorkspaceManagementDescription.value);
+				description.setAttribute('img', this.$.WXRWorkspaceManagementTumbnail.value);
+
+				this.$.WXREditorCenterText.innerText = this.$.WXRWorkspaceManagementTitle.value;
+
+				if( $(WXRRequirement.is).length <= 0 ) {
+					requirement= document.createElement(WXRRequirement.is);
+					$(WXRWorld.is)[0].appendChild(requirement);
+				} else {
+					requirement = $(WXRRequirement.is)[0];
+				}
+
+				if(this.$.viveRadioButton.checked) {
+					devices.push('vive-controller');
+				}
+
+				if(this.$.oculusRadioButton.checked) {
+					devices.push('oculus-touch');
+				}
+
+				if(this.$.windowsRadioButton.checked) {
+					devices.push('windows-spatial');
+				}
+
+				if(this.$.leapRadioButton.checked) {
+					devices.push('leap-motion');
+				}
+
+				requirement.setAttribute('devices', "[" + devices.toString() + "]");
+
+				for(let tr of this.$.WXRUserTable.children) {
+					if(tr.getElementsByClassName('userId').length>0) {
+						let userId = tr.getElementsByClassName('userId')[0].innerText;
+						let authority = tr.getElementsByClassName('iron-selected')[0].innerText;
+						console.log(authority);
+
+						$('[user-id="' + userId + '"]')[0].setAttribute('user-id', userId);
+						$('[user-id="' + userId + '"]')[0].setAttribute('authority', authority);
+
+					}
+				}
 			}
 
 			toggleSidebar() {
