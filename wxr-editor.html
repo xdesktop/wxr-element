@@ -587,6 +587,19 @@
 			}
 
 			saveContents() {
+				let bodyCopped = document.body.cloneNode(true);
+				$(WXREditorUI.is, bodyCopped).remove();
+				let body = bodyCopped.innerHTML;
+				let url = location.href.split('/');
+				let workspaceId = url[url.length-1];
+
+				$.ajax({
+					type: 'POST',
+					url:  '//' + window.location.host + '/workspaces/' + workspaceId + '/save',
+					data: body,
+					contentType: "text/plain"
+				})
+
 				this.$.menuButton.close();
 			}
 
