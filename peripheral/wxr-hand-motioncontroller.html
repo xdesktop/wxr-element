@@ -1,0 +1,38 @@
+<link rel="import" href="../polymerImport.html">
+
+<dom-module id="wxr-hand-motioncontroller">
+	<template>
+		<style>
+			wxr-hand-leapmotion {
+				--wxr-transform: var(--wxr-transform);
+			}
+		</style>
+	</template>
+
+	<script>
+		'use strict';
+
+		class WXRHandMotionController extends WXRPeriphaeralHand {
+			constructor() {
+				super();
+			}
+
+			static get is() {
+				return "wxr-hand-motioncontroller";
+			}
+
+			static get properties() {
+				return {
+
+				};
+			}
+
+			connectedCallback() {
+				super.connectedCallback();
+			}
+		}
+
+		customElements.define(WXRHandMotionController.is, WXRHandMotionController);
+
+	</script>
+</dom-module>
