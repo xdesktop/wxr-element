@@ -19,10 +19,7 @@
 			}
 
 			computeBoundingBox() {
-				let box = new THREE.Box3();
-				box.setFromObject(this.webGLObject3D);
-
-				return box;
+				return (new THREE.BoxHelper(this.webGLObject3D));
 			}
 		}
 
