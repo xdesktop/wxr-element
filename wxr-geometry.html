@@ -19,16 +19,12 @@
 			}
 
 			computeBoundingBox() {
-				let box = new THREE.BoxHelper(this.webGLObject3D);
 
-				let position = this.webGLObject3D.position;
-				let rotation = this.webGLObject3D.rotation;
-				let scale = this.webGLObject3D.scale;
+				const clone = this.webGLObject3D.clone();
+				const inversedMatrix = (new THREE.Matrix4).getInverse(clone.matrix);
+				clone.applyMatrix(inversedMatrix);
 
-				box.position.sub(position);
-				box.rotation.sub(rotation);
-				box.scale.divide(scale);
-
+				let box = new THREE.BoxHelper(clone);
 				this.webGLObject3D.add(box);
 
 				return box;
