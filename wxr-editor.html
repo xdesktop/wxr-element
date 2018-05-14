@@ -386,16 +386,16 @@
 
 					for(let device of devices) {
 						switch(device) {
-							case "vive-controller":
+							case WXRHandViveController.is:
 								this.$.viveRadioButton.checked = true;
 								break;
-							case "oculus-touch":
+							case WXRHandOculusTouch.is:
 								this.$.oculusRadioButton.checked = true;
 								break;
-							case "windows-spatial":
+							case WXRHandMotionController.is:
 								this.$.windowsRadioButton.checked = true;
 								break;
-							case "leap-motion":
+							case WXRHandLeapmotion.is:
 								this.$.leapRadioButton.checked = true;
 								break;
 						}
@@ -462,13 +462,13 @@
 				let modes;
 				if( $(WXRView.is).length > 0 ) {
 					modes = $(WXRView.is)[0].modes;
+
+					for(let mode of modes) {
+						this.$[mode].style.display = "block";
+					}
 				}
 
 				// modes = (modes === undefined) ? ["3D", "AR", "VR"] : modes;
-
-				for(let mode of modes) {
-					this.$[mode].style.display = "block";
-				}
 			}
 
 			setInformation(dom) {
@@ -517,19 +517,19 @@
 				}
 
 				if(this.$.viveRadioButton.checked) {
-					devices.push('vive-controller');
+					devices.push(WXRHandViveController.is);
 				}
 
 				if(this.$.oculusRadioButton.checked) {
-					devices.push('oculus-touch');
+					devices.push(WXRHandOculusTouch.is);
 				}
 
 				if(this.$.windowsRadioButton.checked) {
-					devices.push('windows-spatial');
+					devices.push(WXRHandMotionController.is);
 				}
 
 				if(this.$.leapRadioButton.checked) {
-					devices.push('leap-motion');
+					devices.push(WXRHandLeapmotion.is);
 				}
 
 				requirement.setAttribute('devices', "[" + devices.toString() + "]");
@@ -538,11 +538,9 @@
 					if(tr.getElementsByClassName('userId').length>0) {
 						let userId = tr.getElementsByClassName('userId')[0].innerText;
 						let authority = tr.getElementsByClassName('iron-selected')[0].innerText;
-						console.log(authority);
 
 						$('[user-id="' + userId + '"]')[0].setAttribute('user-id', userId);
 						$('[user-id="' + userId + '"]')[0].setAttribute('authority', authority);
-
 					}
 				}
 			}
@@ -566,7 +564,7 @@
 				this.$.WXRCodepen.open();
 				this.$.menuButton.close();
 
-				this.setCodePen(document.body.innerHTML);
+				this.setCodePen($(WXRWorld.is)[0].innerHTML);
 			}
 
 			setCodePen(source) {
@@ -575,7 +573,22 @@
 			}
 
 			submitCodePen() {
-				document.body.innerHTML = this.$.codePen.value;
+				// document.body.innerHTML = this.$.codePen.value;
+
+				$(WXRWorld.is)[0].innerHTML = this.$.codePen.value;
+
+				for (let spaceDomElement of $(WXRSpace.is)) {
+					if (!spaceDomElement.disabled) {
+						WXREvent.dispatchEvent({type: WXREvent.TARGET_ABAILABLE, target: spaceDomElement });
+					}
+				}
+
+				let table = $('wxr-editor')[0].$.WXRUserTable
+				let len = table.rows.length;
+				for(let i=1; i<len; i++ ) {
+					table.deleteRow(1);
+				}
+				this.initWorkspaceManagement();
 			}
 
 			exportHTML() {
@@ -592,7 +605,11 @@
 
 			saveContents() {
 				let bodyCopped = document.body.cloneNode(true);
+
 				$(WXREditorUI.is, bodyCopped).remove();
+				$('iron-a11y-announcer', bodyCopped).remove();
+				$('#WXRCSS3DRenderer', bodyCopped).remove();
+
 				let body = bodyCopped.innerHTML;
 				let url = location.href.split('/');
 				let workspaceId = url[url.length-1];
@@ -630,18 +647,6 @@
 				// this.$.modeDiv.innerHTML = "AR";
 				WXR.ContextManager.setWXRMode(WXRDevice.AR);
 				this.$.modeIcon.setAttribute('icon', 'launch');
-			}
-
-			showMyDevices() {
-
-			}
-
-			showMyWorkspaces() {
-
-			}
-
-			logout() {
-
 			}
 
 			cameraSyncModeChange() {

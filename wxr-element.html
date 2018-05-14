@@ -35,9 +35,22 @@
 
 				let observer = new MutationObserver(function (mutations) {
 					mutations.forEach(mutationRecord => {
-						let style = this.style;
+						let style = this.getCSSStyleProperty();
 						let transform = style.getPropertyValue('--wxr-transform');
 						let display = style.getPropertyValue('display');
+
+						// for(let rule of style.sheet.rules) {
+						// 	if($(rule.selectorText).length > 0 ) {
+						//
+						// 		for( let dom of $(rule.selectorText)) {
+						// 			if(dom === this) {
+						//
+						// 			}
+						// 		}
+						// 		// console.log($(rule.selectorText)[0].style.cssText);
+						// 	}
+						// 	console.log(rule.cssText);
+						// }
 
 						if (transform !== oldTransform) {
 							oldTransform = transform;
@@ -52,12 +65,13 @@
 				}.bind(this));
 
 				observer.observe(this, {attributes: true, attributeFilter: ['style']});
+
+
 			}
 
 			disconnectedCallback() {
 				super.disconnectedCallback();
-
-				removeObject()
+				this.removeObject();
 			}
 
 			removeObject() {
@@ -80,17 +94,29 @@
 			}
 
 			removeWebGLObject3D() {
-				this.parentElement.webGLObject3D.remove(this.webGLObject3D);
+				if(this.webGLObject3D.parent !== null) {
+					this.webGLObject3D.parent.remove(this.webGLObject3D);
+				}
+
 				this.removeAttribute("webgl_uuid");
-				let webGLAugmentation = new THREE.Group();
-				this.addWebGLObject3D(webGLAugmentation);
+
+				if(this.parentElement !== null) {
+					let webGLAugmentation = new THREE.Group();
+					this.addWebGLObject3D(webGLAugmentation);
+				}
 			}
 
 			removeCSS3DObject3D() {
-				this.parentElement.CSS3DObject3D.remove(this.CSS3DObject3D);
+				if(this.CSS3DObject3D.parent !== null) {
+					this.CSS3DObject3D.parent.remove(this.CSS3DObject3D);
+				}
+
 				this.removeAttribute("css3d_uuid");
-				let css3DAugmentation = new THREE.Group();
-				this.addCSS3DObject3D(css3DAugmentation);
+
+				if(this.parentElement !== null) {
+					let css3DAugmentation = new THREE.Group();
+					this.addCSS3DObject3D(css3DAugmentation);
+				}
 			}
 
 			getCSSStyleProperty() {

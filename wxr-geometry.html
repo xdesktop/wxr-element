@@ -15,6 +15,14 @@
 
 			connectedCallback() {
 				super.connectedCallback();
+				this.boundingBox = new THREE.Box3();
+			}
+
+			computeBoundingBox() {
+				let box = new THREE.Box3();
+				box.setFromObject(this.webGLObject3D);
+
+				return box;
 			}
 		}
 
