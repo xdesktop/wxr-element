@@ -20,6 +20,15 @@
 
 			computeBoundingBox() {
 				let box = new THREE.BoxHelper(this.webGLObject3D);
+
+				let position = this.webGLObject3D.position;
+				let rotation = this.webGLObject3D.rotation;
+				let scale = this.webGLObject3D.scale;
+
+				box.position.sub(position);
+				box.rotation.sub(rotation);
+				box.scale.divide(scale);
+
 				this.webGLObject3D.add(box);
 
 				return box;
