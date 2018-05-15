@@ -39,19 +39,6 @@
 						let transform = style.getPropertyValue('--wxr-transform');
 						let display = style.getPropertyValue('display');
 
-						// for(let rule of style.sheet.rules) {
-						// 	if($(rule.selectorText).length > 0 ) {
-						//
-						// 		for( let dom of $(rule.selectorText)) {
-						// 			if(dom === this) {
-						//
-						// 			}
-						// 		}
-						// 		// console.log($(rule.selectorText)[0].style.cssText);
-						// 	}
-						// 	console.log(rule.cssText);
-						// }
-
 						if (transform !== oldTransform) {
 							oldTransform = transform;
 							this.computeStyleTransform(transform);
@@ -65,8 +52,6 @@
 				}.bind(this));
 
 				observer.observe(this, {attributes: true, attributeFilter: ['style']});
-
-
 			}
 
 			disconnectedCallback() {
@@ -176,16 +161,16 @@
 				}
 
 				if (this.webGLObject3D !== undefined) {
-					this.webGLObject3D.position.set(position.x, position.y, position.z);
-					this.webGLObject3D.rotation.set(rotation.x, rotation.y, rotation.z);
-					this.webGLObject3D.scale.set(scale.x, scale.y, scale.z);
+					this.webGLObject3D.position.set(position.x*1, position.y*1, position.z*1);
+					this.webGLObject3D.rotation.set(rotation.x*1, rotation.y*1, rotation.z*1);
+					this.webGLObject3D.scale.set(scale.x*1, scale.y*1, scale.z*1);
 				}
 
 				if (this.CSS3DObject3D !== undefined) {
 					if(this.CSS3DObject3D.constructor === THREE.CSS3DObject) {
-						this.CSS3DObject3D.position.set(position.x, position.y, position.z);
-						this.CSS3DObject3D.rotation.set(rotation.x, rotation.y, rotation.z);
-						this.CSS3DObject3D.scale.set(scale.x, scale.y, scale.z);
+						this.CSS3DObject3D.position.set(position.x*1, position.y*1, position.z*1);
+						this.CSS3DObject3D.rotation.set(rotation.x*1, rotation.y*1, rotation.z*1);
+						this.CSS3DObject3D.scale.set(scale.x*1, scale.y*1, scale.z*1);
 					}
 				}
 			}
