@@ -12,7 +12,7 @@
 				z-index: 1000;
 			}
 
-			#userButton, #menuButton, #modeButton{
+			#menuButton, #modeButton{
 				position: absolute;
 				width: 50px !important;
 				height: 50px !important;
@@ -26,26 +26,13 @@
 				left: 0;
 			}
 
-			#userButton{
-				top: 10px;
-				right: 5vw;
-				--layout-inline_-_display: inline;
-			}
-
 			#modeButton {
-				right: 0;
+				right: 50px;
 				top: 0;
 			}
 
 			#menuIcon, #modeIcon {
 				color: #FFFFFF;
-				width: 50px !important;
-				height: 50px !important;
-			}
-
-			#userIcon {
-				color: #FFFFFF;
-				margin-top: 10px;
 				width: 50px !important;
 				height: 50px !important;
 			}
@@ -65,14 +52,15 @@
 			}
 
 			#sidebar {
-				float: right;
-				margin-top: 10px;
-				margin-right: 10px;
+				position: absolute;
+				top: 0px;
+				right: 0;
 				width: 50px;
 				height: 50px;
 				background-color: #2196F3;
 				color: white;
 				border-radius: 5px;
+				z-index: 1001;
 			}
 
 			#WXRLeftSidebar, #WXRRightSidebar {
@@ -123,8 +111,10 @@
 			}
 
 		</style>
+
 		<!-- app bar -->
 		<app-toolbar id="WXREditor"></app-toolbar>
+
 		<paper-menu-button id="menuButton" horizontal-align="left"
 						   vertical-align="top"
 						   vertical-offset="50">
@@ -137,6 +127,7 @@
 				<paper-item on-click="exit" id="exit">나가기</paper-item>
 			</div>
 		</paper-menu-button>
+
 		<span slot="top" class="title" id="WXREditorCenterText" >Title</span>
 
 		<paper-menu-button id="modeButton" horizontal-align="right"
@@ -149,7 +140,6 @@
 				<paper-item on-click="setModeAR" id="AR" style="display:none;">AR View</paper-item>
 			</div>
 		</paper-menu-button>
-
 		<paper-icon-button id="sidebar" icon="swap-horiz" horizontal-align="right" on-click="toggleSidebar"></paper-icon-button>
 
 		<!-- 왼쪽 버튼 - menu -->
@@ -644,9 +634,8 @@
 
 			setModeAR() {
 				this.$.modeButton.close();
-				// this.$.modeDiv.innerHTML = "AR";
 				WXR.ContextManager.setWXRMode(WXRDevice.AR);
-				this.$.modeIcon.setAttribute('icon', 'launch');
+				this.$.modeIcon.icon = 'visibility';
 			}
 
 			cameraSyncModeChange() {
