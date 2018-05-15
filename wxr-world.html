@@ -63,12 +63,14 @@
 
 				if (intersects.length > 0) {
 					let object = intersects[0].object;
+
 					let name = object.name;
 					let dom = $('[webgl_uuid=' + object.uuid + ']')[0];
 
 					while(dom===undefined) {
-						dom = $('[webgl_uuid=' + object.uuid + ']')[0];
 						object = object.parent;
+						dom = $('[webgl_uuid=' + object.uuid + ']')[0];
+
 					}
 
 					if($('[me]').length > 0 ) {
