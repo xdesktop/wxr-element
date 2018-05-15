@@ -210,7 +210,9 @@
 
 			traverseDisconnectedCallback(domElement) {
 				if(domElement.tagName.startsWith(WXR.PREFIX_WXR)) {
-					domElement.removeObject();
+					if(domElement.removeObject !== undefined) {
+						domElement.removeObject();
+					}
 				}
 
 				if (domElement.children.length > 0) {
