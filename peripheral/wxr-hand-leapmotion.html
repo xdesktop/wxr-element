@@ -40,44 +40,19 @@
 				}
 			}
 			onTargetAvailable(e) {
-				// console.log('leap: onTargetAvailable', e);
-				// this.createHand();
-				// if ((typeof(WebSocket) == 'undefined') &&
-				// 	(typeof(MozWebSocket) != 'undefined')) {
-				// 	WebSocket = MozWebSocket;
-				// }
 			}
 
 			onLeapDetected(e) {
-				// console.log('leap: onLeapDetected', e);
 				this.createHand();
-				/*
-				* leapMotion Detected
-				*
-				* hand model visible
-				* */
 			}
 
 			onLeapMoved(e) {
-				// console.log('leap: onLeapMoved', e);
 				this.updateHandPosition(e.detail.frame);
 				this.collisionDetect();
-
-				/*
-				* leapMotion Moved
-				*
-				* hand position update
-				* */
 			}
 
 			onLeapMissed(e) {
-				// console.log('leap: onLeapMissed', e);
 				this.removeHand();
-				/*
-				* leapMotion Missed
-				*
-				* hand model invisible
-				* */
 			}
 
 			createHand() {
@@ -105,7 +80,8 @@
 							carpPosition: new THREE.Mesh(jointGeometry, carp),
 							dipPosition: new THREE.Mesh(jointGeometry, dip),
 							mcpPosition: new THREE.Mesh(jointGeometry, mcp),
-							pipPosition: new THREE.Mesh(jointGeometry, pip)
+							pipPosition: new THREE.Mesh(jointGeometry, pip),
+						    extended: false
 						};
 
 						group.add(finger.btipPosition);
@@ -148,7 +124,7 @@
 						fingerModel.dipPosition.position.fromArray(finger.dipPosition.map( e => e/1000 ));
 						fingerModel.mcpPosition.position.fromArray(finger.mcpPosition.map( e => e/1000 ));
 						fingerModel.pipPosition.position.fromArray(finger.pipPosition.map( e => e/1000 ));
-						// fingerModel.tipPosition.position.fromArray(finger.tipPosition);
+						fingerModel.extended = finger.extended;
 					}
 				}
 			}
@@ -160,73 +136,34 @@
 
 			collisionDetect() {
 
-				const leftCollided = [];
-				const rightThunbCollided = [];
-				const rightIndexCollided = [];
-				const meshes = $(WXRWorld.is)[0].renderer.getTargetWebGLObjects();
-
 				// finger.type: 0 -> thumb, 1 -> index, ...
-				const leftThumbFinger = this.hands['left'][0]['btipPosition'];
-				const rightThumbFinger = this.hands['right'][0]['btipPosition'];
+				// const leftThumbFinger = this.hands['left'][0]['btipPosition'];
+				// const rightThumbFinger = this.hands['right'][0]['btipPosition'];
 				const rightIndexFinger = this.hands['right'][1]['btipPosition'];
 
-				// const targets = $(WXRWorld.is)[0].renderer.getWebGLScene().children;
-				const targets = Array.from($(WXRBox.is)).map( e => e.webGLObject3D);
-
-				var raycaster = new THREE.Raycaster(rightThumbFinger.position.clone(), targets[0].position.clone().sub(rightThumbFinger.position.clone()), 0, rightThumbFinger.geometry.boundingSphere.radius );
-				var intersects = raycaster.intersectObject( targets[0] );
-				intersects.forEach( target => {
-					if (target.distance < rightThumbFinger.geometry.boundingSphere.radius) {
-						rightThunbCollided.push(target);
-					}
-				});
-
-				var raycaster = new THREE.Raycaster(rightIndexFinger.position.clone(), targets[0].position.clone().sub(rightIndexFinger.position.clone()), 0, rightIndexFinger.geometry.boundingSphere.radius );
-				var intersects = raycaster.intersectObject( targets[0] );
-				intersects.forEach( target => {
-					if (target.distance < rightIndexFinger.geometry.boundingSphere.radius) {
-						rightIndexCollided.push(target);
-					}
-				});
-
-				if (rightThunbCollided[0] && rightIndexCollided[0] && rightThunbCollided[0].object.uuid === rightIndexCollided[0].object.uuid) {
-					rightThunbCollided[0].object.position.multiplyScalar(1).add(this.deltaRightThumbVector);
-				}
-
-				// var raycaster = new THREE.Raycaster(rightThumbFinger.position.clone());
-				// var intersects = raycaster.intersectObjects( targets, true );
-				// intersects.forEach( target => {
-				// 	if (target.distance < rightThumbFinger.radius) {
-				// 		rightCollided.push(target);
-				// 	}
-				// });
-
-				// var object = leftThumbFinger;
-				// var originPoint = object.position.clone();
-				// meshes.forEach( target => {
-				//     var directionVector = target.position.clone().sub(originPoint);
-				//
-				// 	var ray = new THREE.Raycaster(originPoint, directionVector.clone().normalize());
-				// 	var collisionResults = ray.intersectObject(target);
-				// 	if (collisionResults.length > 0 && collisionResults[0].distance < object.radius) {
-				// 		leftCollided.push(collisionResults[0]);
-				// 	}
-				// });
+				
+				const targets = Array.from($(WXRSpace.is)[0].children).map( e => e.boundingBox ).filter( b => !!b );
+				const rightFingerOrigin = rightIndexFinger.position.clone();
+				var raycaster = new THREE.Raycaster(undefined, undefined, 0, rightIndexFinger.geometry.boundingSphere.radius );
+			    const results = targets.map( _target => {
+			    	raycaster.set(rightFingerOrigin, _target.position.clone().sub(rightFingerOrigin));
+				    const intersects = raycaster.intersectObject( _target );
 
 
-				// var object = rightThumbFinger;
-				// var originPoint = object.position.clone();
-				// for (var vertexIndex = 0; vertexIndex < object.geometry.vertices.length; vertexIndex++) {
-				// 	var localVertex = object.geometry.vertices[vertexIndex].clone();
-				// 	var globalVertex = localVertex.applyMatrix4(object.matrix);
-				// 	var directionVector = globalVertex.sub(object.position);
-				//
-				// 	var ray = new THREE.Raycaster(originPoint, directionVector.clone().normalize());
-				// 	var collisionResults = ray.intersectObjects(meshes);
-				// 	if (collisionResults.length > 0 && collisionResults[0].distance < directionVector.length()) {
-				// 		rightCollided.push(collisionResults[0]);
-				// 	}
-				// }
+				    if (intersects[0]) {
+					    // Only when index and middle finger are exntended.
+				        if (this.hands['right'][0]['extended'] === false
+				                && this.hands['right'][1]['extended'] === true
+				                && this.hands['right'][2]['extended'] === true
+				                && this.hands['right'][3]['extended'] === false
+				                && this.hands['right'][4]['extended'] === false) {
+
+				        	// move parent object of collision detected boxhelper.
+					        intersects[0].object.parent.position.multiplyScalar(1).add(this.deltaRightThumbVector);
+				        }
+				    }
+				    return intersects[0];
+			    });
 
 			}
 
