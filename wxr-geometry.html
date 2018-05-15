@@ -21,7 +21,7 @@
 			computeBoundingBox() {
 
 				const clone = this.webGLObject3D.clone();
-				const inversedMatrix = (new THREE.Matrix4).getInverse(clone.matrix);
+				const inversedMatrix = (new THREE.Matrix4).getInverse(clone.matrixWorld);
 				clone.applyMatrix(inversedMatrix);
 
 				let box = new THREE.BoxHelper(clone);
