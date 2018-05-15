@@ -146,7 +146,7 @@
 				const rightFingerOrigin = rightIndexFinger.position.clone();
 				var raycaster = new THREE.Raycaster(undefined, undefined, 0, rightIndexFinger.geometry.boundingSphere.radius );
 			    const results = targets.map( _target => {
-			    	raycaster.set(rightFingerOrigin, _target.position.clone().sub(rightFingerOrigin));
+			    	raycaster.set(rightFingerOrigin, _target.parent.position.clone().sub(rightFingerOrigin).normalize());
 				    const intersects = raycaster.intersectObject( _target );
 
 
